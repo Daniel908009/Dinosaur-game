@@ -17,35 +17,15 @@ def reset():
     # resetting the pterodactyl spawn
     pterodactyl_spawn = False
     # resizing player and pterodactyls and settings button
-    resized_dinosaur_day = pygame.transform.scale(dinosaur_day, (base_size*2, base_size*2))
-    resized_dinosaur_night = pygame.transform.scale(dinosaur_night, (base_size*2, base_size*2))
-    resized_dinosaur_day2 = pygame.transform.scale(dinosaur_day2, (base_size*2, base_size*2))
-    resized_dinosaur_night2 = pygame.transform.scale(dinosaur_night2, (base_size*2, base_size*2))
-    resized_pterodactyl_day = pygame.transform.scale(pterodactyl_day, (base_size*1.5, base_size))
-    resized_pterodactyl_night = pygame.transform.scale(pterodactyl_night, (base_size*1.5, base_size))
+    dev_mode_images_change()
+
+    # resizing the settings button
+    global resized_settings_button, resized_settings_button_night
+    settings_button = pygame.image.load('main_assets/settings.png')
     resized_settings_button = pygame.transform.scale(settings_button, (base_size, base_size))
+    settings_button_night = pygame.image.load('main_assets/settings_night.png')
     resized_settings_button_night = pygame.transform.scale(settings_button_night, (base_size, base_size))
-    # resizing cactuses
-    cactuses_images_day = [pygame.transform.scale(cactus1, (base_size, base_size)), 
-                           pygame.transform.scale(cactus2, (base_size, base_size)), 
-                           pygame.transform.scale(cactus3, (base_size, base_size)), 
-                           pygame.transform.scale(cactus4, (base_size, base_size)), 
-                           pygame.transform.scale(cactus5, (base_size, base_size)), 
-                           pygame.transform.scale(cactus6, (base_size, base_size)), 
-                           pygame.transform.scale(cactus7, (base_size, base_size)), 
-                           pygame.transform.scale(cactus8, (base_size, base_size)), 
-                           pygame.transform.scale(cactus9, (base_size, base_size)), 
-                           pygame.transform.scale(cactus10, (base_size, base_size))]
-    cactuses_images_night = [pygame.transform.scale(cactus1_night, (base_size, base_size)),
-                            pygame.transform.scale(cactus2_night, (base_size, base_size)),
-                            pygame.transform.scale(cactus3_night, (base_size, base_size)),
-                            pygame.transform.scale(cactus4_night, (base_size, base_size)),
-                            pygame.transform.scale(cactus5_night, (base_size, base_size)),
-                            pygame.transform.scale(cactus6_night, (base_size, base_size)),
-                            pygame.transform.scale(cactus7_night, (base_size, base_size)),
-                            pygame.transform.scale(cactus8_night, (base_size, base_size)),
-                            pygame.transform.scale(cactus9_night, (base_size, base_size)),
-                            pygame.transform.scale(cactus10_night, (base_size, base_size))]
+
 
     # reseting values and objects
     global player, score, player_change, enemies, time, cactus, pterodactyls, cycle, switch_cycle
@@ -150,6 +130,169 @@ def game_over_screen():
         # Frame rate
         clock.tick(60)
 
+# function to change the images when dev mode is on
+def dev_mode_images_change():
+    global dev_mode
+    dev_mode = True
+    #print(dev_mode)
+    if dev_mode:
+        global dinosaur_day, dinosaur_day2, dinosaur_night, cactus1, cactus2, cactus3, cactus4, cactus5, cactus6, cactus7, cactus8, cactus9, cactus10, cactus1_night, cactus2_night, cactus3_night, cactus4_night, cactus5_night, cactus6_night, cactus7_night, cactus8_night, cactus9_night, cactus10_night, pterodactyl_day, pterodactyl_night, powerup1_day, powerup2_day, powerup3_day, powerup1_night, powerup2_night, powerup3_night, resized_dinosaur_day, resized_dinosaur_day2, resized_dinosaur_night, resized_dinosaur_night2, resized_pterodactyl_day, resized_pterodactyl_night, resized_powerup1_day, resized_powerup2_day, resized_powerup3_day, resized_powerup1_night, resized_powerup2_night, resized_powerup3_night, dinosaur_night2
+        dinosaur_day = pygame.image.load('dev_mode_assets/dinosaur1_dev.png')
+        dinosaur_day2 = pygame.image.load('dev_mode_assets/dinosaur1_2_dev.png')
+        dinosaur_night = pygame.image.load('dev_mode_assets/dinosaur2_dev.png')
+        dinosaur_night2 = pygame.image.load('dev_mode_assets/dinosaur2_2_dev.png')
+        cactus1 = pygame.image.load('dev_mode_assets/cactus1_dev.png')
+        cactus2 = pygame.image.load('dev_mode_assets/cactus2_dev.png')
+        cactus3 = pygame.image.load('dev_mode_assets/cactus3_dev.png')
+        cactus4 = pygame.image.load('dev_mode_assets/cactus4_dev.png')
+        cactus5 = pygame.image.load('dev_mode_assets/cactus5_dev.png')
+        cactus6 = pygame.image.load('dev_mode_assets/cactus6_dev.png')
+        cactus7 = pygame.image.load('dev_mode_assets/cactus7_dev.png')
+        cactus8 = pygame.image.load('dev_mode_assets/cactus8_dev.png')
+        cactus9 = pygame.image.load('dev_mode_assets/cactus9_dev.png')
+        cactus10 = pygame.image.load('dev_mode_assets/cactus10_dev.png')
+        cactus1_night = pygame.image.load('dev_mode_assets/cactus1_night_dev.png')
+        cactus2_night = pygame.image.load('dev_mode_assets/cactus2_night_dev.png')
+        cactus3_night = pygame.image.load('dev_mode_assets/cactus3_night_dev.png')
+        cactus4_night = pygame.image.load('dev_mode_assets/cactus4_night_dev.png')
+        cactus5_night = pygame.image.load('dev_mode_assets/cactus5_night_dev.png')
+        cactus6_night = pygame.image.load('dev_mode_assets/cactus6_night_dev.png')
+        cactus7_night = pygame.image.load('dev_mode_assets/cactus7_night_dev.png')
+        cactus8_night = pygame.image.load('dev_mode_assets/cactus8_night_dev.png')
+        cactus9_night = pygame.image.load('dev_mode_assets/cactus9_night_dev.png')
+        cactus10_night = pygame.image.load('dev_mode_assets/cactus10_night_dev.png')
+        pterodactyl_day = pygame.image.load('dev_mode_assets/pterodactyl_temporary_dev.png')
+        pterodactyl_night = pygame.image.load('dev_mode_assets/pterodactyl_temporary2_dev.png')
+        powerup1_day = pygame.image.load('dev_mode_assets/power_up1_day_dev.png')
+        powerup2_day = pygame.image.load('dev_mode_assets/power_up2_day_dev.png')
+        powerup3_day = pygame.image.load('dev_mode_assets/power_up3_day_dev.png')
+        powerup1_night = pygame.image.load('dev_mode_assets/power_up1_night_dev.png')
+        powerup2_night = pygame.image.load('dev_mode_assets/power_up2_night_dev.png')
+        powerup3_night = pygame.image.load('dev_mode_assets/power_up3_night_dev.png')
+    else:
+        dinosaur_day = pygame.image.load('main_assets/dinosaur1.png')
+        dinosaur_day2 = pygame.image.load('main_assets/dinosaur1_2.png')
+        dinosaur_night = pygame.image.load('main_assets/dinosaur2.png')
+        dinosaur_night2 = pygame.image.load('main_assets/dinosaur2_2.png')
+        cactus1 = pygame.image.load('cactus1.png')
+        cactus2 = pygame.image.load('cactus2.png')
+        cactus3 = pygame.image.load('cactus3.png')
+        cactus4 = pygame.image.load('cactus4.png')
+        cactus5 = pygame.image.load('cactus5.png')
+        cactus6 = pygame.image.load('cactus6.png')
+        cactus7 = pygame.image.load('cactus7.png')
+        cactus8 = pygame.image.load('cactus8.png')
+        cactus9 = pygame.image.load('cactus9.png')
+        cactus10 = pygame.image.load('cactus10.png')
+        cactus1_night = pygame.image.load('cactus1_night.png')
+        cactus2_night = pygame.image.load('cactus2_night.png')
+        cactus3_night = pygame.image.load('cactus3_night.png')
+        cactus4_night = pygame.image.load('cactus4_night.png')
+        cactus5_night = pygame.image.load('cactus5_night.png')
+        cactus6_night = pygame.image.load('cactus6_night.png')
+        cactus7_night = pygame.image.load('cactus7_night.png')
+        cactus8_night = pygame.image.load('cactus8_night.png')
+        cactus9_night = pygame.image.load('cactus9_night.png')
+        cactus10_night = pygame.image.load('cactus10_night.png')
+        pterodactyl_day = pygame.image.load('main_assets/pterodactyl_temporary.png')
+        pterodactyl_night = pygame.image.load('main_assets/pterodactyl_temporary2.png')
+        powerup1_day = pygame.image.load('power_up1_day.png')
+        powerup2_day = pygame.image.load('power_up2_day.png')
+        powerup3_day = pygame.image.load('power_up3_day.png')
+        powerup1_night = pygame.image.load('power_up1_night.png')
+        powerup2_night = pygame.image.load('power_up2_night.png')
+        powerup3_night = pygame.image.load('power_up3_night.png')
+    # resizing the images
+    resized_dinosaur_day = pygame.transform.scale(dinosaur_day, (base_size*2, base_size*2))
+    resized_dinosaur_night = pygame.transform.scale(dinosaur_night, (base_size*2, base_size*2))
+    resized_dinosaur_day2 = pygame.transform.scale(dinosaur_day2, (base_size*2, base_size*2))
+    resized_dinosaur_night2 = pygame.transform.scale(dinosaur_night2, (base_size*2, base_size*2))
+    resized_pterodactyl_day = pygame.transform.scale(pterodactyl_day, (base_size*1.5, base_size))
+    resized_pterodactyl_night = pygame.transform.scale(pterodactyl_night, (base_size*1.5, base_size))
+    resized_powerup1_day = pygame.transform.scale(powerup1_day, (base_size, base_size))
+    resized_powerup2_day = pygame.transform.scale(powerup2_day, (base_size, base_size))
+    resized_powerup3_day = pygame.transform.scale(powerup3_day, (base_size, base_size))
+    resized_powerup1_night = pygame.transform.scale(powerup1_night, (base_size, base_size))
+    resized_powerup2_night = pygame.transform.scale(powerup2_night, (base_size, base_size))
+    resized_powerup3_night = pygame.transform.scale(powerup3_night, (base_size, base_size))
+    # resizing powerups
+    # day
+    resized_powerup1_day = pygame.transform.scale(powerup1_day, (base_size, base_size))
+    resized_powerup2_day = pygame.transform.scale(powerup2_day, (base_size, base_size))
+    resized_powerup3_day = pygame.transform.scale(powerup3_day, (base_size, base_size))
+    global resized_powerups_day, resized_powerups_night
+    resized_powerups_day = [resized_powerup1_day, resized_powerup2_day, resized_powerup3_day]
+    # night
+    resized_powerup1_night = pygame.transform.scale(powerup1_night, (base_size, base_size))
+    resized_powerup2_night = pygame.transform.scale(powerup2_night, (base_size, base_size))
+    resized_powerup3_night = pygame.transform.scale(powerup3_night, (base_size, base_size))
+
+    resized_powerups_night = [resized_powerup1_night, resized_powerup2_night, resized_powerup3_night]
+    # pterodactyls images resizing
+    resized_pterodactyl_day = pygame.transform.scale(pterodactyl_day, (base_size*1.5, base_size))
+    resized_pterodactyl_night = pygame.transform.scale(pterodactyl_night, (base_size*1.5, base_size))
+    # resizing cactuses
+    global cactuses_images_day, cactuses_images_night
+    cactuses_images_day = [pygame.transform.scale(cactus1, (base_size, base_size)), 
+                           pygame.transform.scale(cactus2, (base_size, base_size)), 
+                           pygame.transform.scale(cactus3, (base_size, base_size)), 
+                           pygame.transform.scale(cactus4, (base_size, base_size)), 
+                           pygame.transform.scale(cactus5, (base_size, base_size)), 
+                           pygame.transform.scale(cactus6, (base_size, base_size)), 
+                           pygame.transform.scale(cactus7, (base_size, base_size)), 
+                           pygame.transform.scale(cactus8, (base_size, base_size)), 
+                           pygame.transform.scale(cactus9, (base_size, base_size)), 
+                           pygame.transform.scale(cactus10, (base_size, base_size))]
+    cactuses_images_night = [pygame.transform.scale(cactus1_night, (base_size, base_size)),
+                            pygame.transform.scale(cactus2_night, (base_size, base_size)),
+                            pygame.transform.scale(cactus3_night, (base_size, base_size)),
+                            pygame.transform.scale(cactus4_night, (base_size, base_size)),
+                            pygame.transform.scale(cactus5_night, (base_size, base_size)),
+                            pygame.transform.scale(cactus6_night, (base_size, base_size)),
+                            pygame.transform.scale(cactus7_night, (base_size, base_size)),
+                            pygame.transform.scale(cactus8_night, (base_size, base_size)),
+                            pygame.transform.scale(cactus9_night, (base_size, base_size)),
+                            pygame.transform.scale(cactus10_night, (base_size, base_size))]
+
+# function to apply the dev mode settings
+def apply_dev_mode(window,first_window, setting):
+    global dev_mode
+    if setting:
+        dev_mode = True
+    else:
+        dev_mode = False
+    dev_mode_images_change()
+    window.destroy()
+    first_window.destroy()
+
+# function to display the dev mode window
+def dev_mode_window(win):
+    dev = tkinter.Tk()
+    dev.title("Dev mode")
+    dev.geometry("500x400")
+    dev.resizable(False, False)
+    dev.iconbitmap("main_assets/setting.ico")
+    # setting up the main label
+    label = tkinter.Label(dev, text="Dev mode", font=("Arial", 24))
+    label.pack()
+    # setting up a frame for the settings
+    frame = tkinter.Frame(dev)
+    frame.pack()
+    # setting up the activate check button and label
+    activate = tkinter.Label(frame, text="Activate dev mode", font=("Arial", 16))
+    activate.grid(row=0, column=0)
+    e1 = tkinter.StringVar()
+    if dev_mode:
+        e1.set(1)
+    else:
+        e1.set(0)
+    activate_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e1)
+    activate_checkbox.grid(row=0, column=1)
+
+    # setting up the apply button
+    apply_button = tkinter.Button(dev, text="Apply", font=("Arial", 16), command= lambda: apply_dev_mode(dev,win, e1.get()))
+    apply_button.pack(side="bottom")
+
 # function to apply the settings
 def apply_settings(window, setting1, setting2, setting3, setting4, setting5, setting6):
     window.destroy()
@@ -253,6 +396,9 @@ def settings_window():
         e6.set(0)
     setting6_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e6, onvalue=1, offvalue=0)
     setting6_checkbox.grid(row=5, column=1)
+    # button for dev mode window
+    dev_mode_button = tkinter.Button(window, text="Dev mode", font=("Arial", 16), command= lambda: dev_mode_window(window))
+    dev_mode_button.pack(side="bottom")
 
     # setting up the apply button
     apply_button = tkinter.Button(window, text="Apply", font=("Arial", 16), command= lambda: apply_settings(window, e1.get(), e2.get(), e3.get(), e4.get(), e5.get(), e6.get()))
@@ -376,16 +522,11 @@ background_music = mixer.music.load("background.mp3")
 background_music = mixer.music.play(-1)
 background_music_on = True
 sound_effects_on = True
+dev_mode = False
 
-# setting up images of dinosaur and the cactuses
-dinosaur_day = pygame.image.load('main_assets/dinosaur1.png')
-resized_dinosaur_day = pygame.transform.scale(dinosaur_day, (base_size*2, base_size*2))
-dinosaur_day2 = pygame.image.load('main_assets/dinosaur1_2.png')
-resized_dinosaur_day2 = pygame.transform.scale(dinosaur_day2, (base_size*2, base_size*2))
-dinosaur_night = pygame.image.load('main_assets/dinosaur2.png')
-resized_dinosaur_night = pygame.transform.scale(dinosaur_night, (base_size*2, base_size*2))
-dinosaur_night2 = pygame.image.load('main_assets/dinosaur2_2.png')
-resized_dinosaur_night2 = pygame.transform.scale(dinosaur_night2, (base_size*2, base_size*2))
+# setting up images through the dev image change function
+dev_mode_images_change()
+
 touchdown = mixer.Sound("energy_sound.mp3")
 hit_sound = mixer.Sound("hit_sound.mp3")
 
@@ -395,44 +536,14 @@ cycle = "day"
 # creating a sprite group for the enemies
 enemies = pygame.sprite.Group()
 
-# these are for day
-cactus_sizes = [HEIGHT//9,HEIGHT//8,HEIGHT//7.5]
-cactus1 = pygame.image.load('cactus1.png')
-cactus2 = pygame.image.load('cactus2.png')
-cactus3 = pygame.image.load('cactus3.png')
-cactus4 = pygame.image.load('cactus4.png')
-cactus5 = pygame.image.load('cactus5.png')
-cactus6 = pygame.image.load('cactus6.png')
-cactus7 = pygame.image.load('cactus7.png')
-cactus8 = pygame.image.load('cactus8.png')
-cactus9 = pygame.image.load('cactus9.png')
-cactus10 = pygame.image.load('cactus10.png')
-cactuses_images_day = [cactus1, cactus2, cactus3, cactus4, cactus5, cactus6, cactus7, cactus8, cactus9, cactus10]
-
-# these are for night
-cactus1_night = pygame.image.load('cactus1_night.png')
-cactus2_night = pygame.image.load('cactus2_night.png')
-cactus3_night = pygame.image.load('cactus3_night.png')
-cactus4_night = pygame.image.load('cactus4_night.png')
-cactus5_night = pygame.image.load('cactus5_night.png')
-cactus6_night = pygame.image.load('cactus6_night.png')
-cactus7_night = pygame.image.load('cactus7_night.png')
-cactus8_night = pygame.image.load('cactus8_night.png')
-cactus9_night = pygame.image.load('cactus9_night.png')
-cactus10_night = pygame.image.load('cactus10_night.png')
-cactuses_images_night = [cactus1_night, cactus2_night, cactus3_night, cactus4_night, cactus5_night, cactus6_night, cactus7_night, cactus8_night, cactus9_night, cactus10_night]
-
-# pterodactyls images
-pterodactyl_day = pygame.image.load('main_assets/pterodactyl_temporary.png')
-resized_pterodactyl_day = pygame.transform.scale(pterodactyl_day, (base_size*1.5, base_size))
-pterodactyl_night = pygame.image.load('main_assets/pterodactyl_temporary2.png')
-resized_pterodactyl_night = pygame.transform.scale(pterodactyl_night, (base_size*1.5, base_size))
-
 # variables for the pterodactyls
 chance_of_pterodactyl = 20
 pterodactyl_spawn = False
 pterodactyl_heights = [HEIGHT//3*2-resized_pterodactyl_day.get_height(), HEIGHT//3*2-resized_pterodactyl_day.get_height()*2, HEIGHT//3*2+resized_pterodactyl_day.get_height()]
 pterodactyls = pygame.sprite.Group()
+
+# variables for the cactuses
+cactus_sizes = [HEIGHT//9,HEIGHT//8,HEIGHT//7.5]
 
 # settings button images
 settings_button = pygame.image.load('main_assets/settings.png')
@@ -440,29 +551,6 @@ resized_settings_button = pygame.transform.scale(settings_button, (base_size, ba
 settings_button_night = pygame.image.load('main_assets/settings_night.png')
 resized_settings_button_night = pygame.transform.scale(settings_button_night, (base_size, base_size))
 
-# powerups images
-# day
-powerup1_day = pygame.image.load('power_up1_day.png')
-powerup2_day = pygame.image.load('power_up2_day.png')
-powerup3_day = pygame.image.load('power_up3_day.png')
-# night
-powerup1_night = pygame.image.load('power_up1_night.png')
-powerup2_night = pygame.image.load('power_up2_night.png')
-powerup3_night = pygame.image.load('power_up3_night.png')
-
-# resizing powerups
-# day
-resized_powerup1_day = pygame.transform.scale(powerup1_day, (base_size, base_size))
-resized_powerup2_day = pygame.transform.scale(powerup2_day, (base_size, base_size))
-resized_powerup3_day = pygame.transform.scale(powerup3_day, (base_size, base_size))
-
-resized_powerups_day = [resized_powerup1_day, resized_powerup2_day, resized_powerup3_day]
-# night
-resized_powerup1_night = pygame.transform.scale(powerup1_night, (base_size, base_size))
-resized_powerup2_night = pygame.transform.scale(powerup2_night, (base_size, base_size))
-resized_powerup3_night = pygame.transform.scale(powerup3_night, (base_size, base_size))
-
-resized_powerups_night = [resized_powerup1_night, resized_powerup2_night, resized_powerup3_night]
 # powerups variables and group
 powerups = pygame.sprite.Group()
 powerup_heights = [HEIGHT//3*2-resized_powerup1_day.get_height(), HEIGHT//3*2-resized_powerup1_day.get_height()*2, HEIGHT//3*2+resized_powerup1_day.get_height()]
@@ -633,8 +721,6 @@ while running:
                 pterodactyl_spawn = True
 
     # spawning the powerups
-    #print(score%50)
-    #print(spawn_powerup)
     if score > 50 and len(powerups) == 0 and not spawn_powerup and score % 50 == 0:
         rand = random.randint(0, 100)
         if rand < chance_of_powerup_spawn:
@@ -653,7 +739,6 @@ while running:
 
     # if the player has been hit he will be protected for 5 score points
     if player.state == "protected" and distance_when_hit+5 < score:
-        #print("changed")
         player.state = "alive"
 
     # checking for collisions between the player and the powerups
