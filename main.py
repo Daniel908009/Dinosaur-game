@@ -2,17 +2,20 @@ import pygame
 import random
 import tkinter
 import threading
+from pygame import mixer
 
     # functions
 # function to reset the game
 def reset():
     # resizing everything based on the new width
-    global resized_dinosaur_day, resized_dinosaur_night, resized_pterodactyl_day, resized_pterodactyl_night, resized_settings_button, resized_settings_button_night, cactuses_images_day, WIDTH, HEIGHT, base_size, cactuses_images_night, win, cactus_sizes
+    global resized_dinosaur_day, resized_dinosaur_night, resized_pterodactyl_day, resized_pterodactyl_night, resized_settings_button, resized_settings_button_night, cactuses_images_day, WIDTH, HEIGHT, base_size, cactuses_images_night, win, cactus_sizes, pterodactyl_spawn
     WIDTH = win.get_width()
     HEIGHT = WIDTH - WIDTH//4
     base_size = WIDTH//16
     cactus_sizes = [HEIGHT//9,HEIGHT//8,HEIGHT//7.5]
     win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+    # resetting the pterodactyl spawn
+    pterodactyl_spawn = False
     # resizing player and pterodactyls and settings button
     resized_dinosaur_day = pygame.transform.scale(dinosaur_day, (base_size*2, base_size*2))
     resized_dinosaur_night = pygame.transform.scale(dinosaur_night, (base_size*2, base_size*2))
@@ -54,14 +57,23 @@ def reset():
     enemies.add(cactus)
     pterodactyls.empty()
     switch_cycle = False
+    global background_music, background_music_on
+    #print(background_music_on)
+    if background_music_on:
+        background_music = mixer.music.load("background.mp3")
+        background_music = mixer.music.play(-1)
+    else:
+        background_music = mixer.music.stop()
 
 # function to update the timer
 def timer():
-    global time, game_over, settings, running, switch_cycle, cycle, cactus
+    global time, game_over, settings, running, switch_cycle, cycle, cactus, timer_stop
     while running:
-        while game_over:
+        while game_over and running:
             pass
-        while settings:
+        while settings and running:
+            pass
+        while timer_stop and running:
             pass
         time[1] += 1
         if time[1] == 60:
@@ -82,6 +94,10 @@ def timer():
 def game_over_screen():
     global running, game_over
     game_over = True
+    global background_music
+    background_music = mixer.music.stop()
+    game_over_sound = mixer.Sound("game_over_sound.mp3")
+    game_over_sound.play()
     while game_over:
         # Handling events
         for event in pygame.event.get():
@@ -133,15 +149,33 @@ def game_over_screen():
         clock.tick(60)
 
 # function to apply the settings
-def apply_settings(window, setting1):
+def apply_settings(window, setting1, setting2, setting3, setting4, setting5):
     window.destroy()
     global day_night_cycle
     if setting1:
         day_night_cycle = True
     else:
         day_night_cycle = False
-
-    
+    global dificulty
+    dificulty = setting2
+    global pterodactyl_on
+    if setting3:
+        pterodactyl_on = True
+    else:
+        pterodactyl_on = False
+    global timer_stop
+    #print(setting4)
+    if setting4:
+        timer_stop = False
+    else:
+        timer_stop = True
+    global background_music_on
+    #print(setting5)
+    if setting5 == "0":
+        background_music_on = False
+    else:
+        background_music_on = True
+    #print(background_music_on)
     # reseting the game to apply the changes
     reset()
 
@@ -162,37 +196,52 @@ def settings_window():
     setting1 = tkinter.Label(frame, text="Day night cycle", font=("Arial", 16))
     setting1.grid(row=0, column=0)
     e1 = tkinter.StringVar()
-    if cycle == "day":
-        e1.set("Day")
+    if day_night_cycle:
+        e1.set(1)
     else:
-        e1.set("Night")
+        e1.set(0)
     setting1_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e1)
     setting1_checkbox.grid(row=0, column=1)
     # setting up the second setting
     setting2 = tkinter.Label(frame, text="Difficulty", font=("Arial", 16))
     setting2.grid(row=1, column=0)
     e2 = tkinter.StringVar()
-    e2.set("Easy")
+    e2.set(str(dificulty))
     option_menu = tkinter.OptionMenu(frame, e2, "Easy", "Medium", "Hard")
     option_menu.grid(row=1, column=1)
     # setting up the third setting
     setting3 = tkinter.Label(frame, text="Pterodactyls", font=("Arial", 16))
     setting3.grid(row=2, column=0)
     e3 = tkinter.StringVar()
-    e3.set("On")
+    if pterodactyl_on:
+        e3.set(1)
+    else:
+        e3.set(0)
     setting3_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e3)
     setting3_checkbox.grid(row=2, column=1)
     # setting up timer setting
     setting4 = tkinter.Label(frame, text="Timer", font=("Arial", 16))
     setting4.grid(row=3, column=0)
     e4 = tkinter.StringVar()
-    e4.set("On")
+    if timer_stop:
+        e4.set(0)
+    else:
+        e4.set(1)
     setting4_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e4)
     setting4_checkbox.grid(row=3, column=1)
-    
+    # setting for background music
+    setting5 = tkinter.Label(frame, text="Background music", font=("Arial", 16))
+    setting5.grid(row=4, column=0)
+    e5 = tkinter.StringVar()
+    if background_music_on:
+        e5.set(1)
+    else:
+        e5.set(0)
+    setting5_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e5, onvalue=1, offvalue=0)
+    setting5_checkbox.grid(row=4, column=1)
 
     # setting up the apply button
-    apply_button = tkinter.Button(window, text="Apply", font=("Arial", 16), command= lambda: apply_settings(window, e1.get()))
+    apply_button = tkinter.Button(window, text="Apply", font=("Arial", 16), command= lambda: apply_settings(window, e1.get(), e2.get(), e3.get(), e4.get(), e5.get()))
     apply_button.pack(side="bottom")
     window.mainloop()
 
@@ -246,6 +295,8 @@ class Cactus(pygame.sprite.Sprite):
         self.type = "cactus"
     def move(self):
         self.rect.x -= 10
+        global distance_travelled
+        distance_travelled += 10
 
 class Pterodactyl(pygame.sprite.Sprite):
     def __init__(self):
@@ -263,6 +314,20 @@ class Pterodactyl(pygame.sprite.Sprite):
         self.size = self.image.get_height()
     def move(self):
         self.rect.x -= 10
+        global distance_travelled
+        distance_travelled += 10
+
+class PowerUp(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        #self.image = random.choice(powerups)
+        self.image = pygame.transform.scale(self.image, (base_size, base_size))
+        self.rect = self.image.get_rect()
+        self.rect.x = WIDTH
+        self.rect.y = HEIGHT//3*2-self.image.get_height()+resized_dinosaur_day.get_height()
+        self.type = "powerup"
+    def move(self):
+        self.rect.x -= 10
 
 # Initializing the game
 pygame.init()
@@ -274,12 +339,16 @@ pygame.display.set_caption("Dino Game")
 icon = pygame.image.load('dinosaur1.png')
 pygame.display.set_icon(icon)
 base_size = WIDTH//16
+background_music = mixer.music.load("background.mp3")
+background_music = mixer.music.play(-1)
+background_music_on = True
 
 # setting up images of dinosaur and the cactuses
 dinosaur_day = pygame.image.load('dinosaur1.png')
 resized_dinosaur_day = pygame.transform.scale(dinosaur_day, (base_size*2, base_size*2))
 dinosaur_night = pygame.image.load('dinosaur2.png')
 resized_dinosaur_night = pygame.transform.scale(dinosaur_night, (base_size*2, base_size*2))
+touchdown = mixer.Sound("energy_sound.mp3")
 
 # cycle has to be defined pretty high, because its used in the classes
 cycle = "day"
@@ -314,20 +383,30 @@ cactus9_night = pygame.image.load('cactus9_night.png')
 cactus10_night = pygame.image.load('cactus10_night.png')
 cactuses_images_night = [cactus1_night, cactus2_night, cactus3_night, cactus4_night, cactus5_night, cactus6_night, cactus7_night, cactus8_night, cactus9_night, cactus10_night]
 
+# pterodactyls images
 pterodactyl_day = pygame.image.load('pterodactyl_temporary.png')
 resized_pterodactyl_day = pygame.transform.scale(pterodactyl_day, (base_size*1.5, base_size))
 pterodactyl_night = pygame.image.load('pterodactyl_temporary2.png')
 resized_pterodactyl_night = pygame.transform.scale(pterodactyl_night, (base_size*1.5, base_size))
 
+# variables for the pterodactyls
 chance_of_pterodactyl = 20
 pterodactyl_spawn = False
 pterodactyl_heights = [HEIGHT//3*2-resized_pterodactyl_day.get_height(), HEIGHT//3*2+50-resized_pterodactyl_day.get_height(), HEIGHT//3*2+100-resized_pterodactyl_day.get_height()]
 pterodactyls = pygame.sprite.Group()
 
+# settings button images
 settings_button = pygame.image.load('settings.png')
 resized_settings_button = pygame.transform.scale(settings_button, (base_size, base_size))
 settings_button_night = pygame.image.load('settings_night.png')
 resized_settings_button_night = pygame.transform.scale(settings_button_night, (base_size, base_size))
+
+# powerups images
+# these will be added later
+
+# powerups
+# these will be added later
+powerups = pygame.sprite.Group()
 
 # setting up a font for the texts
 font = pygame.font.Font(None, HEIGHT//18)
@@ -336,6 +415,7 @@ font = pygame.font.Font(None, HEIGHT//18)
 player = Dinosaur()
 score = 0
 player_change = 0
+distance_travelled = 0
 
 # spawning one cactus for testing
 cactus = Cactus()
@@ -347,6 +427,7 @@ clock = pygame.time.Clock()
 # setting up a thread for the timer
 timer_thread = threading.Thread(target=timer)
 time = [0,0]
+timer_stop = False
 
 # main loop
 running = True
@@ -354,6 +435,8 @@ game_over = False
 settings = False
 day_night_cycle = True
 switch_cycle = False
+dificulty = "Medium"
+pterodactyl_on = True
 while running:
 
     # starting the timer thread
@@ -423,6 +506,7 @@ while running:
     for enemy in enemies:
         enemy.move()
         if enemy.rect.x < -100-enemy.size:
+            touchdown.play()
             if enemy.type == "cactus":
                 enemies.remove(enemy)
                 # this ensures that there is only 1 cactus or 1 pterodactyl on the screen at the same time
@@ -444,21 +528,26 @@ while running:
                 else:
                     cactus = Cactus()
                     enemies.add(cactus)
-            score += 1
 
     # spawning the pterodactyl
-    if score > 0 and len(pterodactyls) == 0:
-        rand = random.randint(0, 100)
-        if rand < chance_of_pterodactyl:
-            pterodactyl_spawn = True
+    if pterodactyl_on:
+        if score > 100 and len(pterodactyls) == 0:
+            rand = random.randint(0, 100)
+            if rand < chance_of_pterodactyl:
+                pterodactyl_spawn = True
     
     # checking for collisions between the player and the enemies
     if pygame.sprite.spritecollide(player, enemies, False):
         game_over_screen()
 
     # this is the day night cycle switching, it will be used later when I add the opposite color images
-    if time[1] == 9 and day_night_cycle:
+    if time[1] == 59 and day_night_cycle:
         switch_cycle = True
+
+    # getting the score from the distance travelled
+    if distance_travelled >= 100:
+        score += 1
+        distance_travelled = 0
     
     # if the code reaches this part then the settings window is closed
     settings = False
@@ -468,6 +557,5 @@ while running:
 
     # Frame rate
     clock.tick(60)
-
 
 pygame.quit()
