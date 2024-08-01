@@ -8,7 +8,7 @@ from pygame import mixer
 # function to reset the game
 def reset():
     # resizing everything based on the new width
-    global resized_dinosaur_day, resized_dinosaur_night, resized_pterodactyl_day, resized_pterodactyl_night, resized_settings_button, resized_settings_button_night, cactuses_images_day, WIDTH, HEIGHT, base_size, cactuses_images_night, win, cactus_sizes, pterodactyl_spawn
+    global resized_dinosaur_day, resized_dinosaur_night, resized_pterodactyl_day, resized_pterodactyl_night, resized_settings_button, resized_settings_button_night, cactuses_images_day, WIDTH, HEIGHT, base_size, cactus_sizes, resized_dinosaur_day2, resized_dinosaur_night2, win, pterodactyl_spawn, cactuses_images_night
     WIDTH = win.get_width()
     HEIGHT = WIDTH - WIDTH//4
     base_size = WIDTH//16
@@ -19,6 +19,8 @@ def reset():
     # resizing player and pterodactyls and settings button
     resized_dinosaur_day = pygame.transform.scale(dinosaur_day, (base_size*2, base_size*2))
     resized_dinosaur_night = pygame.transform.scale(dinosaur_night, (base_size*2, base_size*2))
+    resized_dinosaur_day2 = pygame.transform.scale(dinosaur_day2, (base_size*2, base_size*2))
+    resized_dinosaur_night2 = pygame.transform.scale(dinosaur_night2, (base_size*2, base_size*2))
     resized_pterodactyl_day = pygame.transform.scale(pterodactyl_day, (base_size*1.5, base_size))
     resized_pterodactyl_night = pygame.transform.scale(pterodactyl_night, (base_size*1.5, base_size))
     resized_settings_button = pygame.transform.scale(settings_button, (base_size, base_size))
@@ -58,7 +60,6 @@ def reset():
     pterodactyls.empty()
     switch_cycle = False
     global background_music, background_music_on
-    #print(background_music_on)
     if background_music_on:
         background_music = mixer.music.load("background.mp3")
         background_music = mixer.music.play(-1)
@@ -188,7 +189,7 @@ def settings_window():
     window.title("Settings")
     window.geometry("500x400")
     window.resizable(False, False)
-    window.iconbitmap("setting.ico")
+    window.iconbitmap("main_assets/setting.ico")
     # setting up the main label
     label = tkinter.Label(window, text="Settings", font=("Arial", 24))
     label.pack()
@@ -262,6 +263,8 @@ def settings_window():
 class Dinosaur(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        self.lives = 3
+        self.state = "alive"
         self.images_day = [resized_dinosaur_day, resized_dinosaur_day2]
         self.images_night = [resized_dinosaur_night, resized_dinosaur_night2]
         self.index = 0
@@ -312,7 +315,7 @@ class Cactus(pygame.sprite.Sprite):
             self.image = self.image_day
         else:
             self.image = self.image_night
-        self.rect.x = WIDTH
+        self.rect.x = random.choice([WIDTH, WIDTH+100, WIDTH+200, WIDTH+300, WIDTH+400, WIDTH+500])
         self.rect.y = HEIGHT//3*2-self.size+resized_dinosaur_day.get_height()
         self.type = "cactus"
     def move(self):
@@ -330,7 +333,7 @@ class Pterodactyl(pygame.sprite.Sprite):
         else:
             self.image = self.image_night
         self.rect = self.image.get_rect()
-        self.rect.x = WIDTH
+        self.rect.x = random.choice([WIDTH, WIDTH+100, WIDTH+200, WIDTH+300, WIDTH+400, WIDTH+500])
         self.rect.y = random.choice(pterodactyl_heights)
         self.type = "pterodactyl"
         self.size = self.image.get_height()
@@ -366,7 +369,7 @@ pygame.init()
 WIDTH, HEIGHT = 800, 600
 win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Dino Game")
-icon = pygame.image.load('dinosaur1.png')
+icon = pygame.image.load('main_assets/dinosaur1.png')
 pygame.display.set_icon(icon)
 base_size = WIDTH//16
 background_music = mixer.music.load("background.mp3")
@@ -375,15 +378,16 @@ background_music_on = True
 sound_effects_on = True
 
 # setting up images of dinosaur and the cactuses
-dinosaur_day = pygame.image.load('dinosaur1.png')
+dinosaur_day = pygame.image.load('main_assets/dinosaur1.png')
 resized_dinosaur_day = pygame.transform.scale(dinosaur_day, (base_size*2, base_size*2))
-dinosaur_day2 = pygame.image.load('dinosaur1_2.png')
+dinosaur_day2 = pygame.image.load('main_assets/dinosaur1_2.png')
 resized_dinosaur_day2 = pygame.transform.scale(dinosaur_day2, (base_size*2, base_size*2))
-dinosaur_night = pygame.image.load('dinosaur2.png')
+dinosaur_night = pygame.image.load('main_assets/dinosaur2.png')
 resized_dinosaur_night = pygame.transform.scale(dinosaur_night, (base_size*2, base_size*2))
-dinosaur_night2 = pygame.image.load('dinosaur2_2.png')
+dinosaur_night2 = pygame.image.load('main_assets/dinosaur2_2.png')
 resized_dinosaur_night2 = pygame.transform.scale(dinosaur_night2, (base_size*2, base_size*2))
 touchdown = mixer.Sound("energy_sound.mp3")
+hit_sound = mixer.Sound("hit_sound.mp3")
 
 # cycle has to be defined pretty high, because its used in the classes
 cycle = "day"
@@ -419,9 +423,9 @@ cactus10_night = pygame.image.load('cactus10_night.png')
 cactuses_images_night = [cactus1_night, cactus2_night, cactus3_night, cactus4_night, cactus5_night, cactus6_night, cactus7_night, cactus8_night, cactus9_night, cactus10_night]
 
 # pterodactyls images
-pterodactyl_day = pygame.image.load('pterodactyl_temporary.png')
+pterodactyl_day = pygame.image.load('main_assets/pterodactyl_temporary.png')
 resized_pterodactyl_day = pygame.transform.scale(pterodactyl_day, (base_size*1.5, base_size))
-pterodactyl_night = pygame.image.load('pterodactyl_temporary2.png')
+pterodactyl_night = pygame.image.load('main_assets/pterodactyl_temporary2.png')
 resized_pterodactyl_night = pygame.transform.scale(pterodactyl_night, (base_size*1.5, base_size))
 
 # variables for the pterodactyls
@@ -431,9 +435,9 @@ pterodactyl_heights = [HEIGHT//3*2-resized_pterodactyl_day.get_height(), HEIGHT/
 pterodactyls = pygame.sprite.Group()
 
 # settings button images
-settings_button = pygame.image.load('settings.png')
+settings_button = pygame.image.load('main_assets/settings.png')
 resized_settings_button = pygame.transform.scale(settings_button, (base_size, base_size))
-settings_button_night = pygame.image.load('settings_night.png')
+settings_button_night = pygame.image.load('main_assets/settings_night.png')
 resized_settings_button_night = pygame.transform.scale(settings_button_night, (base_size, base_size))
 
 # powerups images
@@ -463,9 +467,8 @@ resized_powerups_night = [resized_powerup1_night, resized_powerup2_night, resize
 powerups = pygame.sprite.Group()
 powerup_heights = [HEIGHT//3*2-resized_powerup1_day.get_height(), HEIGHT//3*2-resized_powerup1_day.get_height()*2, HEIGHT//3*2+resized_powerup1_day.get_height()]
 powerup_picked_up = pygame.mixer.Sound("powerup_pickedup.mp3")
-# spawning a test powerup
-powerup = PowerUp()
-powerups.add(powerup)
+chance_of_powerup_spawn = 5
+spawn_powerup = False
 
 # setting up a font for the texts
 font = pygame.font.Font(None, HEIGHT//18)
@@ -475,6 +478,7 @@ player = Dinosaur()
 score = 0
 player_change = 0
 distance_travelled = 0
+distance_when_hit = 0
 
 # spawning one cactus for testing
 cactus = Cactus()
@@ -554,6 +558,12 @@ while running:
     else:
         text = font.render(str(time[0])+"m "+str(time[1]) + "s", True, (255, 255, 255))
     win.blit(text, (WIDTH//2-text.get_width()//2, 10))
+    # drawing the number of lives in the top left corner below the score
+    if cycle == "day":
+        text = font.render("Lives: "+str(player.lives), True, (0, 0, 0))
+    else:
+        text = font.render("Lives: "+str(player.lives), True, (255, 255, 255))
+    win.blit(text, (10, 10+text.get_height()))
 
     # updating the player
     player.update()
@@ -571,8 +581,6 @@ while running:
     for enemy in enemies:
         enemy.move()
         if enemy.rect.x < -100-enemy.size:
-            if sound_effects_on:
-                touchdown.play()
             if enemy.type == "cactus":
                 enemies.remove(enemy)
                 # this ensures that there is only 1 cactus or 1 pterodactyl on the screen at the same time
@@ -581,9 +589,17 @@ while running:
                     enemies.add(pterodactyl)
                     pterodactyls.add(pterodactyl)
                     pterodactyl_spawn = False
+                    if spawn_powerup:
+                        powerup = PowerUp()
+                        powerups.add(powerup)
+                        spawn_powerup = False
                 else:
                     cactus = Cactus()
                     enemies.add(cactus)
+                    if spawn_powerup:
+                        powerup = PowerUp()
+                        powerups.add(powerup)
+                        spawn_powerup = False
             if enemy.type == "pterodactyl":
                 enemies.remove(enemy)
                 if pterodactyl_spawn:
@@ -591,17 +607,23 @@ while running:
                     enemies.add(pterodactyl)
                     pterodactyls.add(pterodactyl)
                     pterodactyl_spawn = False
+                    if spawn_powerup:
+                        powerup = PowerUp()
+                        powerups.add(powerup)
+                        spawn_powerup = False
                 else:
                     cactus = Cactus()
                     enemies.add(cactus)
+                    if spawn_powerup:
+                        powerup = PowerUp()
+                        powerups.add(powerup)
+                        spawn_powerup = False
 
     # moving the powerups
     for powerup in powerups:
         powerup.move()
         if powerup.rect.x < -100-powerup.rect.width:
             powerups.remove(powerup)
-            powerup = PowerUp()
-            powerups.add(powerup)
 
     # spawning the pterodactyl
     if pterodactyl_on:
@@ -609,18 +631,42 @@ while running:
             rand = random.randint(0, 100)
             if rand < chance_of_pterodactyl:
                 pterodactyl_spawn = True
-    
+
+    # spawning the powerups
+    #print(score%50)
+    #print(spawn_powerup)
+    if score > 50 and len(powerups) == 0 and not spawn_powerup and score % 50 == 0:
+        rand = random.randint(0, 100)
+        if rand < chance_of_powerup_spawn:
+            spawn_powerup = True
+            rand = 1001
+
     # checking for collisions between the player and the enemies
-    if pygame.sprite.spritecollide(player, enemies, False):
-        game_over_screen()
-        
+    if pygame.sprite.spritecollide(player, enemies, False) and player.state == "alive":
+        player.lives -= 1
+        if sound_effects_on and player.lives > 0:
+            hit_sound.play()
+        player.state = "protected"
+        distance_when_hit = score
+        if player.lives == 0:
+            game_over_screen()
+
+    # if the player has been hit he will be protected for 5 score points
+    if player.state == "protected" and distance_when_hit+5 < score:
+        #print("changed")
+        player.state = "alive"
+
     # checking for collisions between the player and the powerups
     if pygame.sprite.spritecollide(player, powerups, False):
         if sound_effects_on:
             powerup_picked_up.play()
+        if powerup.type == "powerup1":
+            score += 50
+        elif powerup.type == "powerup2":
+            player.lives += 1
+        elif powerup.type == "powerup3":
+            chance_of_powerup_spawn += 0.5
         powerups.remove(powerup)
-        powerup = PowerUp()
-        powerups.add(powerup)
 
     # this is the day night cycle switching, it will be used later when I add the opposite color images
     if time[1] == 59 and day_night_cycle:
@@ -630,6 +676,10 @@ while running:
     if distance_travelled >= 100:
         score += 1
         distance_travelled = 0
+        # playing the touchdown sound when the score is a multiple of 100
+        if score % 100 == 0 and score != 0:
+            if sound_effects_on:
+                touchdown.play()
     
     # if the code reaches this part then the settings window is closed
     settings = False
