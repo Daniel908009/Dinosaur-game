@@ -133,8 +133,6 @@ def game_over_screen():
 # function to change the images when dev mode is on
 def dev_mode_images_change():
     global dev_mode
-    dev_mode = True
-    #print(dev_mode)
     if dev_mode:
         global dinosaur_day, dinosaur_day2, dinosaur_night, cactus1, cactus2, cactus3, cactus4, cactus5, cactus6, cactus7, cactus8, cactus9, cactus10, cactus1_night, cactus2_night, cactus3_night, cactus4_night, cactus5_night, cactus6_night, cactus7_night, cactus8_night, cactus9_night, cactus10_night, pterodactyl_day, pterodactyl_night, powerup1_day, powerup2_day, powerup3_day, powerup1_night, powerup2_night, powerup3_night, resized_dinosaur_day, resized_dinosaur_day2, resized_dinosaur_night, resized_dinosaur_night2, resized_pterodactyl_day, resized_pterodactyl_night, resized_powerup1_day, resized_powerup2_day, resized_powerup3_day, resized_powerup1_night, resized_powerup2_night, resized_powerup3_night, dinosaur_night2
         dinosaur_day = pygame.image.load('dev_mode_assets/dinosaur1_dev.png')
@@ -255,9 +253,39 @@ def dev_mode_images_change():
                             pygame.transform.scale(cactus10_night, (base_size, base_size))]
 
 # function to apply the dev mode settings
-def apply_dev_mode(window,first_window, setting):
-    global dev_mode
-    if setting:
+def apply_dev_mode(window,first_window, setting, setting2, setting3, setting4, setting5, setting6, setting7):
+    global dev_mode, infinite_lives_on, super_jump_on, manual_cycle_switch_on, manual_pterodactyl_spawn_on, manual_powerup_spawn_on, fps_on
+    print(setting2)
+    # for some reason this doesnt work, so I will have to fix it later
+    if setting2 == 1:
+        infinite_lives_on = True
+    else:
+        infinite_lives_on = False
+    global super_jump_on
+    if setting3 == 1:
+        super_jump_on = True
+    else:
+        super_jump_on = False
+    global manual_cycle_switch_on
+    if setting4 == 1:
+        manual_cycle_switch_on = True
+    else:
+        manual_cycle_switch_on = False
+    global manual_pterodactyl_spawn_on
+    if setting5 == 1:
+        manual_pterodactyl_spawn_on = True
+    else:
+        manual_pterodactyl_spawn_on = False
+    global manual_powerup_spawn_on
+    if setting6 == 1:
+        manual_powerup_spawn_on = True
+    else:
+        manual_powerup_spawn_on = False
+    if setting7 == 1:
+        fps_on = True
+    else:
+        fps_on = False
+    if setting == 1:
         dev_mode = True
     else:
         dev_mode = False
@@ -273,7 +301,7 @@ def dev_mode_window(win):
     dev.resizable(False, False)
     dev.iconbitmap("main_assets/setting.ico")
     # setting up the main label
-    label = tkinter.Label(dev, text="Dev mode", font=("Arial", 24))
+    label = tkinter.Label(dev, text="Dev menu", font=("Arial", 24))
     label.pack()
     # setting up a frame for the settings
     frame = tkinter.Frame(dev)
@@ -286,11 +314,71 @@ def dev_mode_window(win):
         e1.set(1)
     else:
         e1.set(0)
-    activate_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e1)
+    activate_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e1, onvalue=1, offvalue=0)
     activate_checkbox.grid(row=0, column=1)
+    # infinite lives setting
+    infinite_lives = tkinter.Label(frame, text="Infinite lives", font=("Arial", 16))
+    infinite_lives.grid(row=1, column=0)
+    e2 = tkinter.StringVar()
+    if infinite_lives_on:
+        e2.set(1)
+    else:
+        e2.set(0)
+    infinite_lives_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e2, onvalue=1, offvalue=0)
+    infinite_lives_checkbox.grid(row=1, column=1)
+    # setting for super jump
+    super_jump = tkinter.Label(frame, text="Super jump", font=("Arial", 16))
+    super_jump.grid(row=2, column=0)
+    e3 = tkinter.StringVar()
+    if super_jump_on:
+        e3.set(1)
+    else:
+        e3.set(0)
+    super_jump_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e3, onvalue=1, offvalue=0)
+    super_jump_checkbox.grid(row=2, column=1)
+    # setting for manual cycle switch
+    manual_cycle_switch = tkinter.Label(frame, text="Manual cycle switch", font=("Arial", 16))
+    manual_cycle_switch.grid(row=3, column=0)
+    e4 = tkinter.StringVar()
+    if manual_cycle_switch_on:
+        e4.set(1)
+    else:
+        e4.set(0)
+    manual_cycle_switch_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e4, onvalue=1, offvalue=0)
+    manual_cycle_switch_checkbox.grid(row=3, column=1)
+    # setting for manual spawn of pterodactyls
+    manual_pterodactyl_spawn = tkinter.Label(frame, text="Manual pterodactyl spawn", font=("Arial", 16))
+    manual_pterodactyl_spawn.grid(row=4, column=0)
+    e5 = tkinter.StringVar()
+    if manual_pterodactyl_spawn_on:
+        e5.set(1)
+    else:
+        e5.set(0)
+    manual_pterodactyl_spawn_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e5, onvalue=1, offvalue=0)
+    manual_pterodactyl_spawn_checkbox.grid(row=4, column=1)
+    # setting for manual spawn of powerups
+    manual_powerup_spawn = tkinter.Label(frame, text="Manual powerup spawn", font=("Arial", 16))
+    manual_powerup_spawn.grid(row=5, column=0)
+    e6 = tkinter.StringVar()
+    if manual_powerup_spawn_on:
+        e6.set(1)
+    else:
+        e6.set(0)
+    manual_powerup_spawn_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e6,onvalue=1, offvalue=0)
+    manual_powerup_spawn_checkbox.grid(row=5, column=1)
+    # setting for fps
+    fps = tkinter.Label(frame, text="FPS counter", font=("Arial", 16))
+    fps.grid(row=6, column=0)
+    e7 = tkinter.StringVar()
+    if fps_on:
+        e7.set(1)
+    else:
+        e7.set(0)
+    fps_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e7, onvalue=1, offvalue=0)
+    fps_checkbox.grid(row=6, column=1)
 
     # setting up the apply button
-    apply_button = tkinter.Button(dev, text="Apply", font=("Arial", 16), command= lambda: apply_dev_mode(dev,win, e1.get()))
+    apply_button = tkinter.Button(dev, text="Apply", font=("Arial", 16), command= lambda: apply_dev_mode(dev,win, e1.get(), e2.get(), e3.get(), e4.get(), e5.get(), e6.get(), e7.get()))
     apply_button.pack(side="bottom")
 
 # function to apply the settings
@@ -438,7 +526,12 @@ class Dinosaur(pygame.sprite.Sprite):
             if self.rect.y < HEIGHT//3 * 2:
                 self.rect.y +=4
         else:
-            self.rect.y += change
+            if not super_jump_on:
+                self.rect.y += change
+            elif change>0:
+                self.rect.y += change
+            else:
+                self.rect.y += change*2
     def update(self):
         self.index += 0.1
         if int(self.index) == 2:
@@ -523,6 +616,12 @@ background_music = mixer.music.play(-1)
 background_music_on = True
 sound_effects_on = True
 dev_mode = False
+infinite_lives_on = False
+super_jump_on = False
+manual_cycle_switch_on = False
+manual_pterodactyl_spawn_on = False
+manual_powerup_spawn_on = False
+fps_on = False
 
 # setting up images through the dev image change function
 dev_mode_images_change()
@@ -588,6 +687,7 @@ day_night_cycle = True
 switch_cycle = False
 dificulty = "Medium"
 pterodactyl_on = True
+
 while running:
 
     # starting the timer thread
@@ -605,6 +705,12 @@ while running:
                 player_change = resized_dinosaur_day.get_height()//2
             if event.key == pygame.K_r:
                 reset()
+            if event.key == pygame.K_p and manual_pterodactyl_spawn_on:
+                pterodactyl_spawn = True
+            if event.key == pygame.K_c and manual_cycle_switch_on:
+                switch_cycle = True
+            if event.key == pygame.K_m and manual_powerup_spawn_on:
+                spawn_powerup = True
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 player_change = 0
@@ -652,6 +758,10 @@ while running:
     else:
         text = font.render("Lives: "+str(player.lives), True, (255, 255, 255))
     win.blit(text, (10, 10+text.get_height()))
+    # drawing the fps in the bottom left corner
+    if fps_on:
+        text = font.render("FPS: "+str(int(clock.get_fps())), True, (0, 255, 0))
+        win.blit(text, (10, HEIGHT-text.get_height()-10))
 
     # updating the player
     player.update()
@@ -714,21 +824,21 @@ while running:
             powerups.remove(powerup)
 
     # spawning the pterodactyl
-    if pterodactyl_on:
+    if pterodactyl_on and not manual_pterodactyl_spawn_on:
         if score > 100 and len(pterodactyls) == 0:
             rand = random.randint(0, 100)
             if rand < chance_of_pterodactyl:
                 pterodactyl_spawn = True
 
     # spawning the powerups
-    if score > 50 and len(powerups) == 0 and not spawn_powerup and score % 50 == 0:
+    if score > 50 and len(powerups) == 0 and not spawn_powerup and score % 50 == 0 and not manual_powerup_spawn_on:
         rand = random.randint(0, 100)
         if rand < chance_of_powerup_spawn:
             spawn_powerup = True
             rand = 1001
 
     # checking for collisions between the player and the enemies
-    if pygame.sprite.spritecollide(player, enemies, False) and player.state == "alive":
+    if pygame.sprite.spritecollide(player, enemies, False) and player.state == "alive" and not infinite_lives_on:
         player.lives -= 1
         if sound_effects_on and player.lives > 0:
             hit_sound.play()
@@ -754,7 +864,7 @@ while running:
         powerups.remove(powerup)
 
     # this is the day night cycle switching, it will be used later when I add the opposite color images
-    if time[1] == 59 and day_night_cycle:
+    if time[1] == 59 and day_night_cycle and not manual_cycle_switch_on:
         switch_cycle = True
 
     # getting the score from the distance travelled
