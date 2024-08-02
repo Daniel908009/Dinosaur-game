@@ -25,20 +25,18 @@ def reset():
     resized_settings_button = pygame.transform.scale(settings_button, (base_size, base_size))
     settings_button_night = pygame.image.load('main_assets/settings_night.png')
     resized_settings_button_night = pygame.transform.scale(settings_button_night, (base_size, base_size))
-    # resizing the background objects
-    global resized_background_images_day, resized_background_images_night
-    resized_background_images_day = [pygame.transform.scale(backgrounddino1, (base_size*1.5, base_size*1.5)), pygame.transform.scale(backgroundegg, (base_size, base_size)),pygame.transform.scale(backgroundcrater1, (base_size*2, base_size*2)), pygame.transform.scale(backgroundcrater2, (base_size*2,base_size*2))]
-    resized_background_images_night = [pygame.transform.scale(backgrounddino1_night, (base_size*1.5, base_size*1.5)), pygame.transform.scale(backgroundegg_night, (base_size, base_size)), pygame.transform.scale(backgroundcrater1_night, (base_size*2, base_size*2)), pygame.transform.scale(backgroundcrater2_night, (base_size*2,base_size*2))]
-
     # reseting the background objects
     global background_objects, spawn_background_object, when_will_spawn_background_object, score
     background_objects.empty()
     spawn_background_object = False
     score = 0
     when_will_spawn_background_object = random.randint(score+5, score+20)
+    # getting the new cloud sizes
+    global clouds_sizes
+    clouds_sizes = [base_size*3, base_size*2, base_size*2.5]
 
     # reseting values and objects
-    global player, player_change, enemies, time, cactus, pterodactyls, cycle, switch_cycle
+    global player, player_change, enemies, time, cactus, pterodactyls, cycle, switch_cycle, clouds_group
     cycle = "day"
     player = Dinosaur()
     player_change = 0
@@ -48,6 +46,7 @@ def reset():
     enemies.add(cactus)
     pterodactyls.empty()
     switch_cycle = False
+    clouds_group.empty()
     # reseting the background music and background loudness, and sound loudness
     global background_music, background_music_on, current_background_music_loudness
     if background_music_on:
@@ -67,7 +66,7 @@ def reset():
 
 # function to update the timer
 def timer():
-    global time, game_over, settings, running, switch_cycle, cycle, cactus, timer_stop, background_objects, spawn_background_object, when_will_spawn_background_object
+    global time, game_over, settings, running, switch_cycle, cycle, cactus, timer_stop, background_objects, spawn_background_object, when_will_spawn_background_object, when_will_cloud, spawn_cloud, clouds_group, score
     while running:
         while game_over and running:
             pass
@@ -84,15 +83,28 @@ def timer():
             if cycle == "day":
                 cycle = "night"
                 cactus.image = cactus.image_night
+                for object in background_objects:
+                    object.image = object.image_night
+                for object in clouds_group:
+                    object.image = object.image_night
             else:
                 cycle = "day"
                 cactus.image = cactus.image_day
+                for object in background_objects:
+                    object.image = object.image_day
+                for object in clouds_group:
+                    object.image = object.image_day
             switch_cycle = False
         # spawning background objects
         if spawn_background_object:
             background_objects.add(BackgroundObject())
             spawn_background_object = False
             when_will_spawn_background_object = random.randint(score+5, score+20)
+        # spawning clouds
+        if spawn_cloud:
+            clouds_group.add(Clouds())
+            spawn_cloud = False
+            when_will_cloud = random.randint(score+5, score+20)
 
         clock.tick(1)
 
@@ -130,6 +142,8 @@ def game_over_screen():
             # drawing the timer
             text = font.render(str(time[0])+"m "+str(time[1]) + "s", True, (0, 0, 0))
             win.blit(text, (WIDTH//2-text.get_width()//2, 10))
+            # drawing the sun
+            win.blit(resized_sun, (10,text.get_height()*2.5))
         else:
             win.fill((0, 0, 0))
             # drawing the ground
@@ -143,12 +157,17 @@ def game_over_screen():
             # drawing the timer
             text = font.render(str(time[0])+"m "+str(time[1]) + "s", True, (255, 255, 255))
             win.blit(text, (WIDTH//2-text.get_width()//2, 10))
+            # drawing the moon
+            win.blit(resized_moon, (10,text.get_height()*2.5))
 
         # drawing the player
         player.draw(win)
         
         # drawing the cactuses and the pterodactyls
         enemies.draw(win)
+
+        # drawing the clouds
+        clouds_group.draw(win)
 
         # Updating the display
         pygame.display.update()
@@ -649,15 +668,42 @@ class PowerUp(pygame.sprite.Sprite):
 class BackgroundObject(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        self.index = random.randint(0, len(day_background_images)-1)
+        self.size = random.choice(backgroundimage_sizes)
+        self.image_day = day_background_images[self.index]
+        self.image_night = night_background_images[self.index]
+        self.image_day = pygame.transform.scale(self.image_day, (self.size, self.size))
+        self.image_night = pygame.transform.scale(self.image_night, (self.size, self.size))
         if cycle == "day":
-            self.image = random.choice(resized_background_images_day)
+            self.image = self.image_day
         else:
-            self.image = random.choice(resized_background_images_night)
+            self.image = self.image_night
         self.rect = self.image.get_rect()
         self.rect.x = random.choice([WIDTH, WIDTH+100, WIDTH+200, WIDTH+300, WIDTH+400, WIDTH+500])
         self.rect.y = random.randint(HEIGHT//3*2+resized_dinosaur_day.get_height(), HEIGHT-self.image.get_height())
     def move(self):
         self.rect.x -= 10
+    def draw(self, win):
+        win.blit(self.image, (self.rect.x, self.rect.y))
+
+class Clouds(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.index = random.randint(0, len(clouds_images_day)-1)
+        self.size = random.choice(clouds_sizes)
+        self.image_day = clouds_images_day[self.index]
+        self.image_night = clouds_images_night[self.index]
+        self.image_day = pygame.transform.scale(self.image_day, (self.size, self.size))
+        self.image_night = pygame.transform.scale(self.image_night, (self.size, self.size))
+        if cycle == "day":
+            self.image = self.image_day
+        else:
+            self.image = self.image_night
+        self.rect = self.image.get_rect()
+        self.rect.x = WIDTH
+        self.rect.y = random.randint(0, HEIGHT//3)
+    def move(self):
+        self.rect.x -= 1
     def draw(self, win):
         win.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -718,12 +764,37 @@ backgroundcrater1 = pygame.image.load('crater1.png')
 backgroundcrater1_night = pygame.image.load('crater1_night.png')
 backgroundcrater2 = pygame.image.load('crater2.png')
 backgroundcrater2_night = pygame.image.load('crater2_night.png')
+backgroundcrater3 = pygame.image.load('crater3.png')
+backgroundcrater3_night = pygame.image.load('crater3_night.png')
+tumble = pygame.image.load('tumble1.png')
+tumble_night = pygame.image.load('tumble1_night.png')
 
-resized_background_images_day = [pygame.transform.scale(backgrounddino1, (base_size*1.5, base_size*1.5)), pygame.transform.scale(backgroundegg, (base_size, base_size)), pygame.transform.scale(backgroundcrater1, (base_size*2, base_size*2)), pygame.transform.scale(backgroundcrater2, (base_size*2, base_size*2))]
-resized_background_images_night = [pygame.transform.scale(backgrounddino1_night, (base_size*1.5, base_size*1.5)), pygame.transform.scale(backgroundegg_night, (base_size, base_size)), pygame.transform.scale(backgroundcrater1_night, (base_size*2, base_size*2)), pygame.transform.scale(backgroundcrater2_night, (base_size*2, base_size*2))]
+
+night_background_images = [backgrounddino1_night, backgroundegg_night, backgroundcrater1_night, backgroundcrater2_night, tumble_night, backgroundcrater3_night]
+day_background_images = [backgrounddino1, backgroundegg, backgroundcrater1, backgroundcrater2, tumble, backgroundcrater3]
+# clouds images
+cloud1_day = pygame.image.load('cloud1_day.png')
+cloud2_day = pygame.image.load('cloud2_day.png')
+cloud1_night = pygame.image.load('cloud1_night.png')
+cloud2_night = pygame.image.load('cloud2_night.png')
+
+clouds_images_day = [cloud1_day, cloud2_day]
+clouds_images_night = [cloud1_night, cloud2_night]
+clouds_sizes = [base_size*3, base_size*2, base_size*2.5]
+clouds_group = pygame.sprite.Group()
+when_will_cloud = random.randint(score+5, score+20)
+spawn_cloud = False
+
+backgroundimage_sizes = [base_size*1.6, base_size*1.5, base_size]
 background_objects = pygame.sprite.Group()
 spawn_background_object = False
 when_will_spawn_background_object = random.randint(score+5, score+20)
+
+# loading the sun and moon images
+sun = pygame.image.load('sun.png')
+moon = pygame.image.load('moon.png')
+resized_sun = pygame.transform.scale(sun, (base_size*1.5, base_size*1.5))
+resized_moon = pygame.transform.scale(moon, (base_size*1.5, base_size*1.5))
 
 # variables for the cactuses
 cactus_sizes = [HEIGHT//9,HEIGHT//8,HEIGHT//7.5]
@@ -823,12 +894,19 @@ while running:
         pygame.draw.line(win, (255, 255, 255), (0, HEIGHT//3*2+resized_dinosaur_day.get_height()), (WIDTH, HEIGHT//3*2+resized_dinosaur_day.get_height()), 5)
     # drawing the background objects
     background_objects.draw(win)
+    # drawing the clouds
+    clouds_group.draw(win)
     # drawing score in the top left corner
     if cycle == "day":
         text = font.render("Score: "+str(score), True, (0, 0, 0))
     else:
         text = font.render("Score: "+str(score), True, (255, 255, 255))
     win.blit(text, (10, 10))
+    # drawing the sun or the moon
+    if cycle == "day":
+        win.blit(resized_sun, (10, text.get_height()*2.5))
+    else:
+        win.blit(resized_moon, (10, text.get_height()*2.5))
     # drawing the settings button in the top right corner
     if cycle == "day":
         win.blit(resized_settings_button, (WIDTH-resized_settings_button_night.get_width(), 10))
@@ -944,6 +1022,13 @@ while running:
         background_object.move()
         if background_object.rect.x < -100-background_object.rect.width:
             background_objects.remove(background_object)
+    # if a cloud is off the screen then it will be removed
+    for cloud in clouds_group:
+        cloud.move()
+        if cloud.rect.x < 0-cloud.rect.width:
+            clouds_group.remove(cloud)
+
+    print(len(clouds_group))
 
     # checking for collisions between the player and the powerups
     if pygame.sprite.spritecollide(player, powerups, False):
@@ -964,6 +1049,10 @@ while running:
     # every once in a while spawning a background object
     if score  == when_will_spawn_background_object and score != 0 and not spawn_background_object:
         spawn_background_object = True
+
+    # sometimes a cloud will spawn
+    if score > when_will_cloud and len(clouds_group) < 10:
+        spawn_cloud = True
 
     # getting the score from the distance travelled
     if distance_travelled >= 100:
