@@ -25,13 +25,22 @@ def reset():
     resized_settings_button = pygame.transform.scale(settings_button, (base_size, base_size))
     settings_button_night = pygame.image.load('main_assets/settings_night.png')
     resized_settings_button_night = pygame.transform.scale(settings_button_night, (base_size, base_size))
+    # resizing the background objects
+    global resized_background_images_day, resized_background_images_night
+    resized_background_images_day = [pygame.transform.scale(backgrounddino1, (base_size*1.5, base_size*1.5)), pygame.transform.scale(backgroundegg, (base_size, base_size)),pygame.transform.scale(backgroundcrater1, (base_size*2, base_size*2)), pygame.transform.scale(backgroundcrater2, (base_size*2,base_size*2))]
+    resized_background_images_night = [pygame.transform.scale(backgrounddino1_night, (base_size*1.5, base_size*1.5)), pygame.transform.scale(backgroundegg_night, (base_size, base_size)), pygame.transform.scale(backgroundcrater1_night, (base_size*2, base_size*2)), pygame.transform.scale(backgroundcrater2_night, (base_size*2,base_size*2))]
 
+    # reseting the background objects
+    global background_objects, spawn_background_object, when_will_spawn_background_object, score
+    background_objects.empty()
+    spawn_background_object = False
+    score = 0
+    when_will_spawn_background_object = random.randint(score+5, score+20)
 
     # reseting values and objects
-    global player, score, player_change, enemies, time, cactus, pterodactyls, cycle, switch_cycle
+    global player, player_change, enemies, time, cactus, pterodactyls, cycle, switch_cycle
     cycle = "day"
     player = Dinosaur()
-    score = 0
     player_change = 0
     time = [0,0]
     enemies.empty()
@@ -58,7 +67,7 @@ def reset():
 
 # function to update the timer
 def timer():
-    global time, game_over, settings, running, switch_cycle, cycle, cactus, timer_stop
+    global time, game_over, settings, running, switch_cycle, cycle, cactus, timer_stop, background_objects, spawn_background_object, when_will_spawn_background_object
     while running:
         while game_over and running:
             pass
@@ -79,7 +88,13 @@ def timer():
                 cycle = "day"
                 cactus.image = cactus.image_day
             switch_cycle = False
-        pygame.time.wait(1000)
+        # spawning background objects
+        if spawn_background_object:
+            background_objects.add(BackgroundObject())
+            spawn_background_object = False
+            when_will_spawn_background_object = random.randint(score+5, score+20)
+
+        clock.tick(1)
 
 # function to display the game over screen
 def game_over_screen():
@@ -212,12 +227,12 @@ def dev_mode_images_change():
         cactus10_night = pygame.image.load('cactus10_night.png')
         pterodactyl_day = pygame.image.load('main_assets/pterodactyl_temporary.png')
         pterodactyl_night = pygame.image.load('main_assets/pterodactyl_temporary2.png')
-        powerup1_day = pygame.image.load('power_up1_day.png')
-        powerup2_day = pygame.image.load('power_up2_day.png')
-        powerup3_day = pygame.image.load('power_up3_day.png')
-        powerup1_night = pygame.image.load('power_up1_night.png')
-        powerup2_night = pygame.image.load('power_up2_night.png')
-        powerup3_night = pygame.image.load('power_up3_night.png')
+        powerup1_day = pygame.image.load('powerups/power_up1_day.png')
+        powerup2_day = pygame.image.load('powerups/power_up2_day.png')
+        powerup3_day = pygame.image.load('powerups/power_up3_day.png')
+        powerup1_night = pygame.image.load('powerups/power_up1_night.png')
+        powerup2_night = pygame.image.load('powerups/power_up2_night.png')
+        powerup3_night = pygame.image.load('powerups/power_up3_night.png')
     # resizing the images
     resized_dinosaur_day = pygame.transform.scale(dinosaur_day, (base_size*2, base_size*2))
     resized_dinosaur_night = pygame.transform.scale(dinosaur_night, (base_size*2, base_size*2))
@@ -631,6 +646,21 @@ class PowerUp(pygame.sprite.Sprite):
     def move(self):
         self.rect.x -= 10
 
+class BackgroundObject(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        if cycle == "day":
+            self.image = random.choice(resized_background_images_day)
+        else:
+            self.image = random.choice(resized_background_images_night)
+        self.rect = self.image.get_rect()
+        self.rect.x = random.choice([WIDTH, WIDTH+100, WIDTH+200, WIDTH+300, WIDTH+400, WIDTH+500])
+        self.rect.y = random.randint(HEIGHT//3*2+resized_dinosaur_day.get_height(), HEIGHT-self.image.get_height())
+    def move(self):
+        self.rect.x -= 10
+    def draw(self, win):
+        win.blit(self.image, (self.rect.x, self.rect.y))
+
 # Initializing the game
 pygame.init()
 
@@ -657,6 +687,7 @@ manual_cycle_switch_on = False
 manual_pterodactyl_spawn_on = False
 manual_powerup_spawn_on = False
 fps_on = False
+score = 0
 
 # setting up images through the dev image change function
 dev_mode_images_change()
@@ -677,6 +708,22 @@ chance_of_pterodactyl = 20
 pterodactyl_spawn = False
 pterodactyl_heights = [HEIGHT//3*2-resized_pterodactyl_day.get_height(), HEIGHT//3*2-resized_pterodactyl_day.get_height()*2, HEIGHT//3*2+resized_pterodactyl_day.get_height()]
 pterodactyls = pygame.sprite.Group()
+
+# images used in the background
+backgrounddino1 = pygame.image.load('background_dinosaur1.png')
+backgrounddino1_night = pygame.image.load('background_dinosaur1_night.png')
+backgroundegg = pygame.image.load('egg.png')
+backgroundegg_night = pygame.image.load('egg_night.png')
+backgroundcrater1 = pygame.image.load('crater1.png')
+backgroundcrater1_night = pygame.image.load('crater1_night.png')
+backgroundcrater2 = pygame.image.load('crater2.png')
+backgroundcrater2_night = pygame.image.load('crater2_night.png')
+
+resized_background_images_day = [pygame.transform.scale(backgrounddino1, (base_size*1.5, base_size*1.5)), pygame.transform.scale(backgroundegg, (base_size, base_size)), pygame.transform.scale(backgroundcrater1, (base_size*2, base_size*2)), pygame.transform.scale(backgroundcrater2, (base_size*2, base_size*2))]
+resized_background_images_night = [pygame.transform.scale(backgrounddino1_night, (base_size*1.5, base_size*1.5)), pygame.transform.scale(backgroundegg_night, (base_size, base_size)), pygame.transform.scale(backgroundcrater1_night, (base_size*2, base_size*2)), pygame.transform.scale(backgroundcrater2_night, (base_size*2, base_size*2))]
+background_objects = pygame.sprite.Group()
+spawn_background_object = False
+when_will_spawn_background_object = random.randint(score+5, score+20)
 
 # variables for the cactuses
 cactus_sizes = [HEIGHT//9,HEIGHT//8,HEIGHT//7.5]
@@ -700,7 +747,6 @@ font = pygame.font.Font(None, HEIGHT//18)
 
 # creating the dinosaur/player
 player = Dinosaur()
-score = 0
 player_change = 0
 distance_travelled = 0
 distance_when_hit = 0
@@ -775,6 +821,8 @@ while running:
         pygame.draw.line(win, (0, 0, 0), (0, HEIGHT//3*2+resized_dinosaur_day.get_height()), (WIDTH, HEIGHT//3*2+resized_dinosaur_day.get_height()), 5)
     else:
         pygame.draw.line(win, (255, 255, 255), (0, HEIGHT//3*2+resized_dinosaur_day.get_height()), (WIDTH, HEIGHT//3*2+resized_dinosaur_day.get_height()), 5)
+    # drawing the background objects
+    background_objects.draw(win)
     # drawing score in the top left corner
     if cycle == "day":
         text = font.render("Score: "+str(score), True, (0, 0, 0))
@@ -891,6 +939,12 @@ while running:
     if player.state == "protected" and distance_when_hit+5 < score:
         player.state = "alive"
 
+    # if a background object is off the screen then it will be removed
+    for background_object in background_objects:
+        background_object.move()
+        if background_object.rect.x < -100-background_object.rect.width:
+            background_objects.remove(background_object)
+
     # checking for collisions between the player and the powerups
     if pygame.sprite.spritecollide(player, powerups, False):
         if sound_effects_on:
@@ -904,8 +958,12 @@ while running:
         powerups.remove(powerup)
 
     # this is the day night cycle switching, it will be used later when I add the opposite color images
-    if time[1] == 9 and day_night_cycle and not manual_cycle_switch_on:
+    if time[1] == 59 and day_night_cycle and not manual_cycle_switch_on:
         switch_cycle = True
+    
+    # every once in a while spawning a background object
+    if score  == when_will_spawn_background_object and score != 0 and not spawn_background_object:
+        spawn_background_object = True
 
     # getting the score from the distance travelled
     if distance_travelled >= 100:
