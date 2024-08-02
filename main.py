@@ -39,12 +39,22 @@ def reset():
     enemies.add(cactus)
     pterodactyls.empty()
     switch_cycle = False
-    global background_music, background_music_on
+    # reseting the background music and background loudness, and sound loudness
+    global background_music, background_music_on, current_background_music_loudness
     if background_music_on:
-        background_music = mixer.music.load("background.mp3")
+        background_music = mixer.music.load("sounds/background.mp3")
+        background_music = mixer.music.set_volume(current_background_music_loudness/100)
         background_music = mixer.music.play(-1)
     else:
         background_music = mixer.music.stop()
+    # reseting the sound effects
+    global touchdown, game_over_sound, sound_effects_on, current_sound_loudness, hit_sound
+    touchdown = mixer.Sound("sounds/energy_sound.mp3")
+    game_over_sound = mixer.Sound("sounds/game_over_sound.mp3")
+    hit_sound = mixer.Sound("sounds/hit_sound.mp3")
+    touchdown.set_volume(current_sound_loudness/100)
+    game_over_sound.set_volume(current_sound_loudness/100)
+    hit_sound.set_volume(current_sound_loudness/100)
 
 # function to update the timer
 def timer():
@@ -73,11 +83,11 @@ def timer():
 
 # function to display the game over screen
 def game_over_screen():
-    global running, game_over
+    global running, game_over, game_over_sound
     game_over = True
     global background_music
     background_music = mixer.music.stop()
-    game_over_sound = mixer.Sound("game_over_sound.mp3")
+    game_over_sound.play()
     if sound_effects_on:
         game_over_sound.play()
     while game_over:
@@ -134,11 +144,15 @@ def game_over_screen():
 def dev_mode_images_change():
     global dev_mode
     if dev_mode:
-        global dinosaur_day, dinosaur_day2, dinosaur_night, cactus1, cactus2, cactus3, cactus4, cactus5, cactus6, cactus7, cactus8, cactus9, cactus10, cactus1_night, cactus2_night, cactus3_night, cactus4_night, cactus5_night, cactus6_night, cactus7_night, cactus8_night, cactus9_night, cactus10_night, pterodactyl_day, pterodactyl_night, powerup1_day, powerup2_day, powerup3_day, powerup1_night, powerup2_night, powerup3_night, resized_dinosaur_day, resized_dinosaur_day2, resized_dinosaur_night, resized_dinosaur_night2, resized_pterodactyl_day, resized_pterodactyl_night, resized_powerup1_day, resized_powerup2_day, resized_powerup3_day, resized_powerup1_night, resized_powerup2_night, resized_powerup3_night, dinosaur_night2, dinosaur_day_ducked, dinosaur_night_ducked, dinosaur_day2_ducked, dinosaur_night2_ducked
+        global dinosaur_day, dinosaur_day2, dinosaur_night, cactus1, cactus2, cactus3, cactus4, cactus5, cactus6, cactus7, cactus8, cactus9, cactus10, cactus1_night, cactus2_night, cactus3_night, cactus4_night, cactus5_night, cactus6_night, cactus7_night, cactus8_night, cactus9_night, cactus10_night, pterodactyl_day, pterodactyl_night, powerup1_day, powerup2_day, powerup3_day, powerup1_night, powerup2_night, powerup3_night, resized_dinosaur_day, resized_dinosaur_day2, resized_dinosaur_night, resized_dinosaur_night2, resized_pterodactyl_day, resized_pterodactyl_night, resized_powerup1_day, resized_powerup2_day, resized_powerup3_day, resized_powerup1_night, resized_powerup2_night, resized_powerup3_night, dinosaur_night2, dinosaur_day_ducked, dinosaur_night_ducked, dinosaur_day2_ducked, dinosaur_night2_ducked, resized_dinosaur_day_ducked, resized_dinosaur_night_ducked, resized_dinosaur_day2_ducked, resized_dinosaur_night2_ducked
         dinosaur_day = pygame.image.load('dev_mode_assets/dinosaur1_dev.png')
         dinosaur_day2 = pygame.image.load('dev_mode_assets/dinosaur1_2_dev.png')
         dinosaur_night = pygame.image.load('dev_mode_assets/dinosaur2_dev.png')
         dinosaur_night2 = pygame.image.load('dev_mode_assets/dinosaur2_2_dev.png')
+        dinosaur_day_ducked = pygame.image.load('dev_mode_assets/dinosaur1_ducked_dev.png')
+        dinosaur_night_ducked = pygame.image.load('dev_mode_assets/dinosaur2_ducked_dev.png')
+        dinosaur_day2_ducked = pygame.image.load('dev_mode_assets/dinosaur1_2_ducked_dev.png')
+        dinosaur_night2_ducked = pygame.image.load('dev_mode_assets/dinosaur2_2_ducked_dev.png')
         cactus1 = pygame.image.load('dev_mode_assets/cactus1_dev.png')
         cactus2 = pygame.image.load('dev_mode_assets/cactus2_dev.png')
         cactus3 = pygame.image.load('dev_mode_assets/cactus3_dev.png')
@@ -209,6 +223,10 @@ def dev_mode_images_change():
     resized_dinosaur_night = pygame.transform.scale(dinosaur_night, (base_size*2, base_size*2))
     resized_dinosaur_day2 = pygame.transform.scale(dinosaur_day2, (base_size*2, base_size*2))
     resized_dinosaur_night2 = pygame.transform.scale(dinosaur_night2, (base_size*2, base_size*2))
+    resized_dinosaur_day_ducked = pygame.transform.scale(dinosaur_day_ducked, (base_size*2, base_size*1.5))
+    resized_dinosaur_night_ducked = pygame.transform.scale(dinosaur_night_ducked, (base_size*2, base_size*1.5))
+    resized_dinosaur_day2_ducked = pygame.transform.scale(dinosaur_day2_ducked, (base_size*2, base_size*1.5))
+    resized_dinosaur_night2_ducked = pygame.transform.scale(dinosaur_night2_ducked, (base_size*2, base_size*1.5))
     resized_pterodactyl_day = pygame.transform.scale(pterodactyl_day, (base_size*1.5, base_size))
     resized_pterodactyl_night = pygame.transform.scale(pterodactyl_night, (base_size*1.5, base_size))
     resized_powerup1_day = pygame.transform.scale(powerup1_day, (base_size, base_size))
@@ -258,8 +276,6 @@ def dev_mode_images_change():
 
 # function to apply the dev mode settings
 def apply_dev_mode(setting1, setting2, setting3, setting4, setting5, setting6, setting7):
-    #print(setting1, setting2, setting3, setting4, setting5, setting6, setting7)
-    #print(type(setting1), type(setting2), type(setting3), type(setting4), type(setting5), type(setting6), type(setting7))
     global dev_mode
     if setting1 == "1":
         dev_mode = True
@@ -297,27 +313,36 @@ def apply_dev_mode(setting1, setting2, setting3, setting4, setting5, setting6, s
         fps_on = False
 
 # function to apply the settings
-def apply_settings(window, setting1, setting2, setting3, setting4, setting5, setting6, setting7, setting8, setting9, setting10, setting11, setting12, setting13):
+def apply_settings(window, setting1, setting2, setting3, setting4, setting5, setting6, setting7, setting8, setting9, setting10, setting11, setting12, setting13, background_music_loudness, sound_loudness):
     window.destroy()
+    # applying the dev mode settings
     apply_dev_mode(setting7, setting8, setting9, setting10, setting11, setting12, setting13)
+    # applying the setting for the loudness
+    global current_sound_loudness, current_background_music_loudness
+    current_sound_loudness = sound_loudness
+    current_background_music_loudness = background_music_loudness
+    # applying the setting for the day night cycle
     global day_night_cycle
-    #print(setting1, setting2, setting3, setting4, setting5, setting6)
     if setting1 == "1":
         day_night_cycle = True
     else:
         day_night_cycle = False
+    # applying the setting for the dificulty
     global dificulty
     dificulty = setting2
     global pterodactyl_on
+    # applying the setting for the pterodactyls
     if setting3 == "1":
         pterodactyl_on = True
     else:
         pterodactyl_on = False
+    # applying the setting for the timer
     global timer_stop
     if setting4 == "1":
         timer_stop = False
     else:
         timer_stop = True
+    # applying the setting for the background music and sound effects
     global background_music_on
     if setting5 == "0":
         background_music_on = False
@@ -401,6 +426,20 @@ def settings_window():
         e6.set(0)
     setting6_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e6, onvalue=1, offvalue=0)
     setting6_checkbox.grid(row=5, column=1)
+    # setting for the sound loudness
+    sound_loudness = tkinter.Label(frame, text="Sound loudness", font=("Arial", 16))
+    sound_loudness.grid(row=6, column=0)
+    sound_loud = tkinter.StringVar()
+    sound_loud.set(current_sound_loudness)
+    sound_loudness_slider = tkinter.Scale(frame, from_=0, to=100, orient="horizontal", variable=sound_loud)
+    sound_loudness_slider.grid(row=6, column=1)
+    # setting for the background music loudness
+    background_music_loudness = tkinter.Label(frame, text="Background music loudness", font=("Arial", 16))
+    background_music_loudness.grid(row=7, column=0)
+    background_music_loud = tkinter.StringVar()
+    background_music_loud.set(current_background_music_loudness)
+    background_music_loudness_slider = tkinter.Scale(frame, from_=0, to=100, orient="horizontal", variable=background_music_loud)
+    background_music_loudness_slider.grid(row=7, column=1)
     # settings for dev mode
     setting7 = tkinter.Label(frame, text="Dev mode", font=("Arial", 16))
     setting7.grid(row=0, column=2)
@@ -472,12 +511,8 @@ def settings_window():
     setting13_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e13, onvalue=1, offvalue=0)
     setting13_checkbox.grid(row=6, column=3)
 
-    # apply button for the dev mode settings
-    #apply_button = tkinter.Button(window, text="Apply dev settings", font=("Arial", 16), command= lambda: apply_dev_mode(window, e7.get(), e8.get(), e9.get(), e10.get(), e11.get(), e12.get(), e13.get()))
-    #apply_button.pack(side="bottom")
-
     # setting up the apply button
-    apply_button = tkinter.Button(window, text="Apply", font=("Arial", 16), command= lambda: apply_settings(window, e1.get(), e2.get(), e3.get(), e4.get(), e5.get(), e6.get(), e7.get(), e8.get(), e9.get(), e10.get(), e11.get(), e12.get(), e13.get()))
+    apply_button = tkinter.Button(window, text="Apply", font=("Arial", 16), command= lambda: apply_settings(window, e1.get(), e2.get(), e3.get(), e4.get(), e5.get(), e6.get(), e7.get(), e8.get(), e9.get(), e10.get(), e11.get(), e12.get(), e13.get(), background_music_loudness_slider.get(), sound_loudness_slider.get()))
     apply_button.pack(side="bottom")
     window.mainloop()
 
@@ -487,8 +522,11 @@ class Dinosaur(pygame.sprite.Sprite):
         super().__init__()
         self.lives = 3
         self.state = "alive"
+        self.ducked = False
         self.images_day = [resized_dinosaur_day, resized_dinosaur_day2]
         self.images_night = [resized_dinosaur_night, resized_dinosaur_night2]
+        self.images_day_ducked = [resized_dinosaur_day_ducked, resized_dinosaur_day2_ducked]
+        self.images_night_ducked = [resized_dinosaur_night_ducked, resized_dinosaur_night2_ducked]
         self.index = 0
         self.image_day = self.images_day[self.index]
         self.image_night = self.images_night[self.index]
@@ -526,6 +564,10 @@ class Dinosaur(pygame.sprite.Sprite):
             self.index = 0
         self.image_day = self.images_day[int(self.index)]
         self.image_night = self.images_night[int(self.index)]
+        if self.ducked:
+            self.image_day = self.images_day_ducked[int(self.index)]
+            self.image_night = self.images_night_ducked[int(self.index)]
+            self.rect.y = HEIGHT//3*2+base_size//2
 
 class Cactus(pygame.sprite.Sprite):
     def __init__(self):
@@ -599,9 +641,14 @@ pygame.display.set_caption("Dino Game")
 icon = pygame.image.load('main_assets/dinosaur1.png')
 pygame.display.set_icon(icon)
 base_size = WIDTH//16
-background_music = mixer.music.load("background.mp3")
+current_background_music_loudness = 50
+current_sound_loudness = 50
+background_music = mixer.music.load("sounds/background.mp3")
+background_music = mixer.music.set_volume(current_background_music_loudness/100)
 background_music = mixer.music.play(-1)
 background_music_on = True
+game_over_sound = mixer.Sound("sounds/game_over_sound.mp3")
+game_over_sound.set_volume(current_sound_loudness/100)
 sound_effects_on = True
 dev_mode = False
 infinite_lives_on = False
@@ -614,8 +661,10 @@ fps_on = False
 # setting up images through the dev image change function
 dev_mode_images_change()
 
-touchdown = mixer.Sound("energy_sound.mp3")
-hit_sound = mixer.Sound("hit_sound.mp3")
+touchdown = mixer.Sound("sounds/energy_sound.mp3")
+touchdown.set_volume(current_sound_loudness/100)
+hit_sound = mixer.Sound("sounds/hit_sound.mp3")
+hit_sound.set_volume(current_sound_loudness/100)
 
 # cycle has to be defined pretty high, because its used in the classes
 cycle = "day"
@@ -641,7 +690,8 @@ resized_settings_button_night = pygame.transform.scale(settings_button_night, (b
 # powerups variables and group
 powerups = pygame.sprite.Group()
 powerup_heights = [HEIGHT//3*2-resized_powerup1_day.get_height(), HEIGHT//3*2-resized_powerup1_day.get_height()*2, HEIGHT//3*2+resized_powerup1_day.get_height()]
-powerup_picked_up = pygame.mixer.Sound("powerup_pickedup.mp3")
+powerup_picked_up = pygame.mixer.Sound("sounds/powerup_pickedup.mp3")
+powerup_picked_up.set_volume(current_sound_loudness/100)
 chance_of_powerup_spawn = 5
 spawn_powerup = False
 
@@ -690,7 +740,8 @@ while running:
             if event.key == pygame.K_SPACE or event.key == pygame.K_UP or event.key == pygame.K_w:
                 player_change = -resized_dinosaur_day.get_height()*1.8
             if event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                player_change = resized_dinosaur_day.get_height()//2
+                if player.rect.y == HEIGHT//3*2:
+                    player.ducked = True
             if event.key == pygame.K_r:
                 reset()
             if event.key == pygame.K_p and manual_pterodactyl_spawn_on:
@@ -701,8 +752,9 @@ while running:
                 spawn_powerup = True
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                player_change = 0
-                player.rect.y = HEIGHT//3 * 2
+                if player.rect.y > HEIGHT//3*2:
+                    player.ducked = False
+                    player.rect.y = HEIGHT//3*2
             if event.key == pygame.K_UP or event.key == pygame.K_w or event.key == pygame.K_SPACE:
                 player_change = 0
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -852,7 +904,7 @@ while running:
         powerups.remove(powerup)
 
     # this is the day night cycle switching, it will be used later when I add the opposite color images
-    if time[1] == 59 and day_night_cycle and not manual_cycle_switch_on:
+    if time[1] == 9 and day_night_cycle and not manual_cycle_switch_on:
         switch_cycle = True
 
     # getting the score from the distance travelled
