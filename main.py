@@ -25,6 +25,11 @@ def reset():
     resized_settings_button = pygame.transform.scale(settings_button, (base_size, base_size))
     settings_button_night = pygame.image.load('main_assets/settings_night.png')
     resized_settings_button_night = pygame.transform.scale(settings_button_night, (base_size, base_size))
+    # resizing the buttons
+    global resized_play_button, resized_scores_button, resized_exit_button
+    resized_exit_button = pygame.transform.scale(exit_button, (base_size*5, base_size*2))
+    resized_play_button = pygame.transform.scale(play_button, (base_size*5, base_size*2))
+    resized_scores_button = pygame.transform.scale(scores_button, (base_size*5, base_size*2))
     # reseting the background objects
     global background_objects, spawn_background_object, when_will_spawn_background_object, score
     background_objects.empty()
@@ -48,11 +53,11 @@ def reset():
     switch_cycle = False
     clouds_group.empty()
     # reseting the background music and background loudness, and sound loudness
-    global background_music, background_music_on, current_background_music_loudness
+    global background_music, background_music_on, current_background_music_loudness, current_sound_loudness, background_music_playing
     if background_music_on:
         background_music = mixer.music.load("sounds/background.mp3")
         background_music = mixer.music.set_volume(current_background_music_loudness/100)
-        background_music = mixer.music.play(-1)
+        background_music_playing = False
     else:
         background_music = mixer.music.stop()
     # reseting the sound effects
@@ -108,9 +113,59 @@ def timer():
 
         clock.tick(1)
 
+# function for the main menu loop
+def main_menu_window(screen):
+    global running, settings, main_menu
+    main_menu_running = True
+    main_menu_font = pygame.font.Font("freesansbold.ttf", 60)
+    while main_menu_running:
+        # Handling events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                main_menu_running = False
+                running = False
+                settings = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    settings_window()
+                if event.key == pygame.K_r:
+                    reset()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # checking if the play button was clicked
+                if WIDTH//2-resized_play_button.get_width()//2 <= event.pos[0] <= WIDTH//2+resized_play_button.get_width()//2 and HEIGHT//3 <= event.pos[1] <= HEIGHT//3+resized_play_button.get_height():
+                    print("play")
+                    reset()
+                    main_menu_running = False
+                    main_menu = False
+                # checking if the scores button was clicked
+                if WIDTH//2-resized_scores_button.get_width()//2 <= event.pos[0] <= WIDTH//2+resized_scores_button.get_width()//2 and HEIGHT//3+resized_play_button.get_height()*1.2 <= event.pos[1] <= HEIGHT//3+resized_play_button.get_height()*1.2+resized_scores_button.get_height():
+                    print("scores")
+                    # later on I will add a highscore system that will be accessed here
+                    pass
+                # checking if the exit button was clicked
+                if WIDTH//2-resized_exit_button.get_width()//2 <= event.pos[0] <= WIDTH//2+resized_exit_button.get_width()//2 and HEIGHT//3+resized_play_button.get_height()*2*1.2 <= event.pos[1] <= HEIGHT//3+resized_play_button.get_height()*2*1.2+resized_exit_button.get_height():
+                    print("exit")
+                    main_menu_running = False
+                    running = False
+                    settings = False
+            # displaying the different buttons and texts
+        #background
+        win.fill((255, 255, 255))
+        # drawing a main label
+        text = main_menu_font.render("Dino Run", True, (0, 0, 0))
+        win.blit(text, (WIDTH//2-text.get_width()//2, HEIGHT//6))
+        # drawing the first button(play)
+        screen.blit(resized_play_button, (WIDTH//2-resized_play_button.get_width()//2, HEIGHT//3))
+        # drawing the second button(scores)
+        screen.blit(resized_scores_button, (WIDTH//2-resized_scores_button.get_width()//2, HEIGHT//3+resized_play_button.get_height()*1.2))
+        # drawing the third button(exit)
+        screen.blit(resized_exit_button, (WIDTH//2-resized_exit_button.get_width()//2, HEIGHT//3+resized_play_button.get_height()*2*1.2))
+
+        pygame.display.update()
+
 # function to display the game over screen
 def game_over_screen():
-    global running, game_over, game_over_sound
+    global running, game_over, game_over_sound, main_menu
     game_over = True
     global background_music
     background_music = mixer.music.stop()
@@ -125,6 +180,10 @@ def game_over_screen():
                 game_over = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
+                    game_over = False
+                    reset()
+                if event.key == pygame.K_q:
+                    main_menu = True
                     game_over = False
                     reset()
 
@@ -721,8 +780,8 @@ current_background_music_loudness = 50
 current_sound_loudness = 50
 background_music = mixer.music.load("sounds/background.mp3")
 background_music = mixer.music.set_volume(current_background_music_loudness/100)
-background_music = mixer.music.play(-1)
 background_music_on = True
+background_music_playing = False
 game_over_sound = mixer.Sound("sounds/game_over_sound.mp3")
 game_over_sound.set_volume(current_sound_loudness/100)
 sound_effects_on = True
@@ -734,6 +793,7 @@ manual_pterodactyl_spawn_on = False
 manual_powerup_spawn_on = False
 fps_on = False
 score = 0
+main_menu = True
 
 # setting up images through the dev image change function
 dev_mode_images_change()
@@ -755,6 +815,14 @@ pterodactyl_spawn = False
 pterodactyl_heights = [HEIGHT//3*2-resized_pterodactyl_day.get_height(), HEIGHT//3*2-resized_pterodactyl_day.get_height()*2, HEIGHT//3*2+resized_pterodactyl_day.get_height()]
 pterodactyls = pygame.sprite.Group()
 
+# images used in the menu
+play_button = pygame.image.load('play_button.png')
+resized_play_button = pygame.transform.scale(play_button, (base_size*5, base_size*2))
+exit_button = pygame.image.load('exit_button.png')
+resized_exit_button = pygame.transform.scale(exit_button, (base_size*5, base_size*2))
+scores_button = pygame.image.load('scores_button.png')
+resized_scores_button = pygame.transform.scale(scores_button, (base_size*5, base_size*2))
+
 # images used in the background
 backgrounddino1 = pygame.image.load('background_dinosaur1.png')
 backgrounddino1_night = pygame.image.load('background_dinosaur1_night.png')
@@ -766,20 +834,26 @@ backgroundcrater2 = pygame.image.load('crater2.png')
 backgroundcrater2_night = pygame.image.load('crater2_night.png')
 backgroundcrater3 = pygame.image.load('crater3.png')
 backgroundcrater3_night = pygame.image.load('crater3_night.png')
+backgroundcrater4 = pygame.image.load('crater4.png')
+backgroundcrater4_night = pygame.image.load('crater4_night.png')
 tumble = pygame.image.load('tumble1.png')
 tumble_night = pygame.image.load('tumble1_night.png')
 
 
-night_background_images = [backgrounddino1_night, backgroundegg_night, backgroundcrater1_night, backgroundcrater2_night, tumble_night, backgroundcrater3_night]
-day_background_images = [backgrounddino1, backgroundegg, backgroundcrater1, backgroundcrater2, tumble, backgroundcrater3]
+night_background_images = [backgrounddino1_night, backgroundegg_night, backgroundcrater1_night, backgroundcrater2_night, tumble_night, backgroundcrater3_night, backgroundcrater4_night]
+day_background_images = [backgrounddino1, backgroundegg, backgroundcrater1, backgroundcrater2, tumble, backgroundcrater3, backgroundcrater4]
 # clouds images
 cloud1_day = pygame.image.load('cloud1_day.png')
 cloud2_day = pygame.image.load('cloud2_day.png')
 cloud1_night = pygame.image.load('cloud1_night.png')
 cloud2_night = pygame.image.load('cloud2_night.png')
+cloud3_day = pygame.image.load('cloud3_day.png')
+cloud3_night = pygame.image.load('cloud3_night.png')
+cloud4_day = pygame.image.load('cloud4_day.png')
+cloud4_night = pygame.image.load('cloud4_night.png')
 
-clouds_images_day = [cloud1_day, cloud2_day]
-clouds_images_night = [cloud1_night, cloud2_night]
+clouds_images_day = [cloud1_day, cloud2_day, cloud3_day, cloud4_day]
+clouds_images_night = [cloud1_night, cloud2_night, cloud3_night, cloud4_night]
 clouds_sizes = [base_size*3, base_size*2, base_size*2.5]
 clouds_group = pygame.sprite.Group()
 when_will_cloud = random.randint(score+5, score+20)
@@ -845,9 +919,18 @@ pterodactyl_on = True
 
 while running:
 
+    # checking if the main menu is on
+    if main_menu:
+        main_menu_window(win)
+
     # starting the timer thread
     if not timer_thread.is_alive():
         timer_thread.start()
+
+    # playing the background music
+    if background_music_on and not background_music_playing:
+        mixer.music.play(-1)
+        background_music_playing = True
 
     # Handling events
     for event in pygame.event.get():
@@ -867,6 +950,9 @@ while running:
                 switch_cycle = True
             if event.key == pygame.K_m and manual_powerup_spawn_on:
                 spawn_powerup = True
+            if event.key == pygame.K_q:
+                mixer.music.stop()
+                main_menu = True
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 if player.rect.y > HEIGHT//3*2:
@@ -1028,8 +1114,6 @@ while running:
         if cloud.rect.x < 0-cloud.rect.width:
             clouds_group.remove(cloud)
 
-    print(len(clouds_group))
-
     # checking for collisions between the player and the powerups
     if pygame.sprite.spritecollide(player, powerups, False):
         if sound_effects_on:
@@ -1047,7 +1131,7 @@ while running:
         switch_cycle = True
     
     # every once in a while spawning a background object
-    if score  == when_will_spawn_background_object and score != 0 and not spawn_background_object:
+    if score  > when_will_spawn_background_object and score != 0 and not spawn_background_object:
         spawn_background_object = True
 
     # sometimes a cloud will spawn
