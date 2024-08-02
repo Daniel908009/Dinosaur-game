@@ -134,7 +134,7 @@ def game_over_screen():
 def dev_mode_images_change():
     global dev_mode
     if dev_mode:
-        global dinosaur_day, dinosaur_day2, dinosaur_night, cactus1, cactus2, cactus3, cactus4, cactus5, cactus6, cactus7, cactus8, cactus9, cactus10, cactus1_night, cactus2_night, cactus3_night, cactus4_night, cactus5_night, cactus6_night, cactus7_night, cactus8_night, cactus9_night, cactus10_night, pterodactyl_day, pterodactyl_night, powerup1_day, powerup2_day, powerup3_day, powerup1_night, powerup2_night, powerup3_night, resized_dinosaur_day, resized_dinosaur_day2, resized_dinosaur_night, resized_dinosaur_night2, resized_pterodactyl_day, resized_pterodactyl_night, resized_powerup1_day, resized_powerup2_day, resized_powerup3_day, resized_powerup1_night, resized_powerup2_night, resized_powerup3_night, dinosaur_night2
+        global dinosaur_day, dinosaur_day2, dinosaur_night, cactus1, cactus2, cactus3, cactus4, cactus5, cactus6, cactus7, cactus8, cactus9, cactus10, cactus1_night, cactus2_night, cactus3_night, cactus4_night, cactus5_night, cactus6_night, cactus7_night, cactus8_night, cactus9_night, cactus10_night, pterodactyl_day, pterodactyl_night, powerup1_day, powerup2_day, powerup3_day, powerup1_night, powerup2_night, powerup3_night, resized_dinosaur_day, resized_dinosaur_day2, resized_dinosaur_night, resized_dinosaur_night2, resized_pterodactyl_day, resized_pterodactyl_night, resized_powerup1_day, resized_powerup2_day, resized_powerup3_day, resized_powerup1_night, resized_powerup2_night, resized_powerup3_night, dinosaur_night2, dinosaur_day_ducked, dinosaur_night_ducked, dinosaur_day2_ducked, dinosaur_night2_ducked
         dinosaur_day = pygame.image.load('dev_mode_assets/dinosaur1_dev.png')
         dinosaur_day2 = pygame.image.load('dev_mode_assets/dinosaur1_2_dev.png')
         dinosaur_night = pygame.image.load('dev_mode_assets/dinosaur2_dev.png')
@@ -172,6 +172,10 @@ def dev_mode_images_change():
         dinosaur_day2 = pygame.image.load('main_assets/dinosaur1_2.png')
         dinosaur_night = pygame.image.load('main_assets/dinosaur2.png')
         dinosaur_night2 = pygame.image.load('main_assets/dinosaur2_2.png')
+        dinosaur_day_ducked = pygame.image.load('main_assets/dinosaur1_ducked.png')
+        dinosaur_night_ducked = pygame.image.load('main_assets/dinosaur2_ducked.png')
+        dinosaur_day2_ducked = pygame.image.load('main_assets/dinosaur1_2_ducked.png')
+        dinosaur_night2_ducked = pygame.image.load('main_assets/dinosaur2_2_ducked.png')
         cactus1 = pygame.image.load('cactus1.png')
         cactus2 = pygame.image.load('cactus2.png')
         cactus3 = pygame.image.load('cactus3.png')
@@ -253,151 +257,64 @@ def dev_mode_images_change():
                             pygame.transform.scale(cactus10_night, (base_size, base_size))]
 
 # function to apply the dev mode settings
-def apply_dev_mode(window,first_window, setting, setting2, setting3, setting4, setting5, setting6, setting7):
-    global dev_mode, infinite_lives_on, super_jump_on, manual_cycle_switch_on, manual_pterodactyl_spawn_on, manual_powerup_spawn_on, fps_on
-    print(setting2)
-    # for some reason this doesnt work, so I will have to fix it later
-    if setting2 == 1:
+def apply_dev_mode(setting1, setting2, setting3, setting4, setting5, setting6, setting7):
+    #print(setting1, setting2, setting3, setting4, setting5, setting6, setting7)
+    #print(type(setting1), type(setting2), type(setting3), type(setting4), type(setting5), type(setting6), type(setting7))
+    global dev_mode
+    if setting1 == "1":
+        dev_mode = True
+    else:
+        dev_mode = False
+    global infinite_lives_on
+    if setting2 == "1":
         infinite_lives_on = True
     else:
         infinite_lives_on = False
     global super_jump_on
-    if setting3 == 1:
+    if setting3 == "1":
         super_jump_on = True
     else:
         super_jump_on = False
     global manual_cycle_switch_on
-    if setting4 == 1:
+    if setting4 == "1":
         manual_cycle_switch_on = True
     else:
         manual_cycle_switch_on = False
     global manual_pterodactyl_spawn_on
-    if setting5 == 1:
+    if setting5 == "1":
         manual_pterodactyl_spawn_on = True
     else:
         manual_pterodactyl_spawn_on = False
     global manual_powerup_spawn_on
-    if setting6 == 1:
+    if setting6 == "1":
         manual_powerup_spawn_on = True
     else:
         manual_powerup_spawn_on = False
-    if setting7 == 1:
+    global fps_on
+    if setting7 == "1":
         fps_on = True
     else:
         fps_on = False
-    if setting == 1:
-        dev_mode = True
-    else:
-        dev_mode = False
-    dev_mode_images_change()
-    window.destroy()
-    first_window.destroy()
-
-# function to display the dev mode window
-def dev_mode_window(win):
-    dev = tkinter.Tk()
-    dev.title("Dev mode")
-    dev.geometry("500x400")
-    dev.resizable(False, False)
-    dev.iconbitmap("main_assets/setting.ico")
-    # setting up the main label
-    label = tkinter.Label(dev, text="Dev menu", font=("Arial", 24))
-    label.pack()
-    # setting up a frame for the settings
-    frame = tkinter.Frame(dev)
-    frame.pack()
-    # setting up the activate check button and label
-    activate = tkinter.Label(frame, text="Activate dev mode", font=("Arial", 16))
-    activate.grid(row=0, column=0)
-    e1 = tkinter.StringVar()
-    if dev_mode:
-        e1.set(1)
-    else:
-        e1.set(0)
-    activate_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e1, onvalue=1, offvalue=0)
-    activate_checkbox.grid(row=0, column=1)
-    # infinite lives setting
-    infinite_lives = tkinter.Label(frame, text="Infinite lives", font=("Arial", 16))
-    infinite_lives.grid(row=1, column=0)
-    e2 = tkinter.StringVar()
-    if infinite_lives_on:
-        e2.set(1)
-    else:
-        e2.set(0)
-    infinite_lives_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e2, onvalue=1, offvalue=0)
-    infinite_lives_checkbox.grid(row=1, column=1)
-    # setting for super jump
-    super_jump = tkinter.Label(frame, text="Super jump", font=("Arial", 16))
-    super_jump.grid(row=2, column=0)
-    e3 = tkinter.StringVar()
-    if super_jump_on:
-        e3.set(1)
-    else:
-        e3.set(0)
-    super_jump_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e3, onvalue=1, offvalue=0)
-    super_jump_checkbox.grid(row=2, column=1)
-    # setting for manual cycle switch
-    manual_cycle_switch = tkinter.Label(frame, text="Manual cycle switch", font=("Arial", 16))
-    manual_cycle_switch.grid(row=3, column=0)
-    e4 = tkinter.StringVar()
-    if manual_cycle_switch_on:
-        e4.set(1)
-    else:
-        e4.set(0)
-    manual_cycle_switch_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e4, onvalue=1, offvalue=0)
-    manual_cycle_switch_checkbox.grid(row=3, column=1)
-    # setting for manual spawn of pterodactyls
-    manual_pterodactyl_spawn = tkinter.Label(frame, text="Manual pterodactyl spawn", font=("Arial", 16))
-    manual_pterodactyl_spawn.grid(row=4, column=0)
-    e5 = tkinter.StringVar()
-    if manual_pterodactyl_spawn_on:
-        e5.set(1)
-    else:
-        e5.set(0)
-    manual_pterodactyl_spawn_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e5, onvalue=1, offvalue=0)
-    manual_pterodactyl_spawn_checkbox.grid(row=4, column=1)
-    # setting for manual spawn of powerups
-    manual_powerup_spawn = tkinter.Label(frame, text="Manual powerup spawn", font=("Arial", 16))
-    manual_powerup_spawn.grid(row=5, column=0)
-    e6 = tkinter.StringVar()
-    if manual_powerup_spawn_on:
-        e6.set(1)
-    else:
-        e6.set(0)
-    manual_powerup_spawn_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e6,onvalue=1, offvalue=0)
-    manual_powerup_spawn_checkbox.grid(row=5, column=1)
-    # setting for fps
-    fps = tkinter.Label(frame, text="FPS counter", font=("Arial", 16))
-    fps.grid(row=6, column=0)
-    e7 = tkinter.StringVar()
-    if fps_on:
-        e7.set(1)
-    else:
-        e7.set(0)
-    fps_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e7, onvalue=1, offvalue=0)
-    fps_checkbox.grid(row=6, column=1)
-
-    # setting up the apply button
-    apply_button = tkinter.Button(dev, text="Apply", font=("Arial", 16), command= lambda: apply_dev_mode(dev,win, e1.get(), e2.get(), e3.get(), e4.get(), e5.get(), e6.get(), e7.get()))
-    apply_button.pack(side="bottom")
 
 # function to apply the settings
-def apply_settings(window, setting1, setting2, setting3, setting4, setting5, setting6):
+def apply_settings(window, setting1, setting2, setting3, setting4, setting5, setting6, setting7, setting8, setting9, setting10, setting11, setting12, setting13):
     window.destroy()
+    apply_dev_mode(setting7, setting8, setting9, setting10, setting11, setting12, setting13)
     global day_night_cycle
-    if setting1:
+    #print(setting1, setting2, setting3, setting4, setting5, setting6)
+    if setting1 == "1":
         day_night_cycle = True
     else:
         day_night_cycle = False
     global dificulty
     dificulty = setting2
     global pterodactyl_on
-    if setting3:
+    if setting3 == "1":
         pterodactyl_on = True
     else:
         pterodactyl_on = False
     global timer_stop
-    if setting4:
+    if setting4 == "1":
         timer_stop = False
     else:
         timer_stop = True
@@ -418,11 +335,11 @@ def apply_settings(window, setting1, setting2, setting3, setting4, setting5, set
 def settings_window():
     window = tkinter.Tk()
     window.title("Settings")
-    window.geometry("500x400")
+    window.geometry("700x400")
     window.resizable(False, False)
     window.iconbitmap("main_assets/setting.ico")
     # setting up the main label
-    label = tkinter.Label(window, text="Settings", font=("Arial", 24))
+    label = tkinter.Label(window, text="Settings X Dev menu", font=("Arial", 24))
     label.pack()
     # setting up a frame for the settings
     frame = tkinter.Frame(window)
@@ -484,12 +401,83 @@ def settings_window():
         e6.set(0)
     setting6_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e6, onvalue=1, offvalue=0)
     setting6_checkbox.grid(row=5, column=1)
-    # button for dev mode window
-    dev_mode_button = tkinter.Button(window, text="Dev mode", font=("Arial", 16), command= lambda: dev_mode_window(window))
-    dev_mode_button.pack(side="bottom")
+    # settings for dev mode
+    setting7 = tkinter.Label(frame, text="Dev mode", font=("Arial", 16))
+    setting7.grid(row=0, column=2)
+    e7 = tkinter.StringVar()
+    if dev_mode:
+        e7.set(1)
+    else:
+        e7.set(0)
+    setting7_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e7, onvalue=1, offvalue=0)
+    setting7_checkbox.grid(row=0, column=3)
+    # setting for infinite lives
+    setting8 = tkinter.Label(frame, text="Infinite lives", font=("Arial", 16))
+    setting8.grid(row=1, column=2)
+    e8 = tkinter.StringVar()
+    if infinite_lives_on:
+        e8.set(1)
+    else:
+        e8.set(0)
+    setting8_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e8, onvalue=1, offvalue=0)
+    setting8_checkbox.grid(row=1, column=3)
+    # setting for super jump
+    setting9 = tkinter.Label(frame, text="Super jump", font=("Arial", 16))
+    setting9.grid(row=2, column=2)
+    e9 = tkinter.StringVar()
+    if super_jump_on:
+        e9.set(1)
+    else:
+        e9.set(0)
+    setting9_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e9, onvalue=1, offvalue=0)
+    setting9_checkbox.grid(row=2, column=3)
+    # setting for manual cycle switch
+    setting10 = tkinter.Label(frame, text="Manual cycle switch", font=("Arial", 16))
+    setting10.grid(row=3, column=2)
+    e10 = tkinter.StringVar()
+    if manual_cycle_switch_on:
+        e10.set(1)
+    else:
+        e10.set(0)
+    setting10_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e10, onvalue=1, offvalue=0)
+    setting10_checkbox.grid(row=3, column=3)
+    # setting for manual pterodactyl spawn
+    setting11 = tkinter.Label(frame, text="Manual pterodactyl spawn", font=("Arial", 16))
+    setting11.grid(row=4, column=2)
+    e11 = tkinter.StringVar()
+    if manual_pterodactyl_spawn_on:
+        e11.set(1)
+    else:
+        e11.set(0)
+    setting11_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e11, onvalue=1, offvalue=0)
+    setting11_checkbox.grid(row=4, column=3)
+    # setting for manual powerup spawn
+    setting12 = tkinter.Label(frame, text="Manual powerup spawn", font=("Arial", 16))
+    setting12.grid(row=5, column=2)
+    e12 = tkinter.StringVar()
+    if manual_powerup_spawn_on:
+        e12.set(1)
+    else:
+        e12.set(0)
+    setting12_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e12, onvalue=1, offvalue=0)
+    setting12_checkbox.grid(row=5, column=3)
+    # setting for fps
+    setting13 = tkinter.Label(frame, text="FPS", font=("Arial", 16))
+    setting13.grid(row=6, column=2)
+    e13 = tkinter.StringVar()
+    if fps_on:
+        e13.set(1)
+    else:
+        e13.set(0)
+    setting13_checkbox = tkinter.Checkbutton(frame, font=("Arial", 16), variable=e13, onvalue=1, offvalue=0)
+    setting13_checkbox.grid(row=6, column=3)
+
+    # apply button for the dev mode settings
+    #apply_button = tkinter.Button(window, text="Apply dev settings", font=("Arial", 16), command= lambda: apply_dev_mode(window, e7.get(), e8.get(), e9.get(), e10.get(), e11.get(), e12.get(), e13.get()))
+    #apply_button.pack(side="bottom")
 
     # setting up the apply button
-    apply_button = tkinter.Button(window, text="Apply", font=("Arial", 16), command= lambda: apply_settings(window, e1.get(), e2.get(), e3.get(), e4.get(), e5.get(), e6.get()))
+    apply_button = tkinter.Button(window, text="Apply", font=("Arial", 16), command= lambda: apply_settings(window, e1.get(), e2.get(), e3.get(), e4.get(), e5.get(), e6.get(), e7.get(), e8.get(), e9.get(), e10.get(), e11.get(), e12.get(), e13.get()))
     apply_button.pack(side="bottom")
     window.mainloop()
 
