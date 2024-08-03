@@ -1,9 +1,52 @@
 # this file will be used in combination with a new powerup, when player touches the power up a random fact about the dinosaurs will appear.
-# example facts
-Dinosaurs are a group of reptiles that have lived on Earth for about 245 million years.
-The term "Dinosauria" was coined in 1842 by the English naturalist Sir Richard Owen.
-Dinosaur fossils have been found on all seven continents.
-All non-avian dinosaurs went extinct about 66 million years ago.
-The longest dinosaur egg ever found was 2 feet long.
-Almost all carnivorous dinosaurs had hollow bones to make them lighter and more agile.
-The most dangerous dinosaur was the Tyrannosaurus rex
+# a metric ton of facts
+First Discovery: The first dinosaur fossil was discovered in 1824 by Reverend William Buckland, who named it Megalosaurus.
+The Name "Dinosaur": The term "dinosaur" means "terrible lizard" and was coined by Sir Richard Owen in 1842.
+Dinosaur Era: Dinosaurs lived during the Mesozoic Era, which is divided into the Triassic, Jurassic, and Cretaceous periods.
+Oldest Known Dinosaur: Nyasasaurus from Tanzania, estimated to be around 243 million years old, may be the oldest known dinosaur.
+Largest Dinosaur: The largest known dinosaur is Argentinosaurus, a titanosaur that could reach up to 100 feet in length and weigh up to 100 tons.
+Smallest Dinosaur: Microraptor was about the size of a pigeon, with some species measuring only a few inches long.
+First Feathered Dinosaur: Archaeopteryx, discovered in 1861, was one of the first dinosaurs found with evidence of feathers.
+Birds Are Dinosaurs: Modern birds are considered avian dinosaurs, descended from theropods.
+Tyrannosaurus rex: T. rex had one of the strongest bite forces of any land animal, estimated at over 12,800 pounds of force.
+Plant-Eaters: Many dinosaurs were herbivores, like Brachiosaurus and Triceratops.
+Meat-Eaters: Carnivorous dinosaurs, like Velociraptor and Allosaurus, were often agile hunters.
+Omnivores: Some dinosaurs, like Oviraptor, may have had a varied diet including both plants and small animals.
+Dinosaur Eggs: Dinosaurs laid eggs, and some species, like Maiasaura, showed evidence of parental care.
+Dinosaur Sizes: Dinosaurs ranged in size from small bird-like creatures to massive titans like Diplodocus.
+Dinosaur Colors: Fossil evidence suggests some dinosaurs had colorful feathers, possibly for display or camouflage.
+Horns and Crests: Dinosaurs like Triceratops and Pachycephalosaurus had unique head ornaments, possibly for display, defense, or thermoregulation.
+Armored Dinosaurs: Ankylosaurus and Stegosaurus had bony armor and tail spikes for protection.
+Dinosaur Speed: Some dinosaurs, like Velociraptor, were likely fast runners, while others, like Stegosaurus, were slower.
+Theropod Claws: Theropods, such as Deinonychus, had sharp claws used for hunting.
+Saurischia vs. Ornithischia: Dinosaurs are classified into two main groups based on hip structure: Saurischia (lizard-hipped) and Ornithischia (bird-hipped).
+Dinosaur Extinction: Dinosaurs went extinct around 66 million years ago, likely due to a combination of factors including an asteroid impact.
+Dinosaur Fossils: Dinosaur fossils are found on every continent, including Antarctica.
+Largest Carnivorous Dinosaur: Spinosaurus is considered the largest carnivorous dinosaur, potentially reaching lengths of up to 59 feet.
+Longest Neck: Mamenchisaurus had one of the longest necks of any dinosaur, with some estimates suggesting it could reach up to 50 feet in length.
+Brain Size: Some dinosaurs, like Stegosaurus, had relatively small brains for their body size.
+Egg Incubation: Some dinosaurs may have incubated their eggs similar to birds, using body heat or nesting materials.
+Pterosaur Misconception: Pterosaurs were flying reptiles, not dinosaurs, though they lived during the same time period.
+Swimming Dinosaurs: Some dinosaurs, like Spinosaurus, showed adaptations for an aquatic lifestyle.
+Sauropod Nostrils: Sauropods, like Brachiosaurus, had nostrils on the top of their heads.
+Dinosaur Footprints: Trace fossils, like footprints, provide evidence of dinosaur behavior and movement.
+Dinosaur Vision: Some dinosaurs may have had excellent vision, possibly even in color, to spot predators or prey.
+Feathered Dinosaurs: Many theropods, including Velociraptor, had feathers, and some may have used them for display or thermoregulation.
+Dinosaur Sounds: It's uncertain what sounds dinosaurs made, but some may have communicated through vocalizations or other means.
+Dinosaur Skin: Fossilized skin impressions show that some dinosaurs had scaly skin, while others had feathers.
+Dinosaur Herds: Evidence suggests that some dinosaurs, like Edmontosaurus, may have lived in herds.
+Dinosaur Braincases: CT scans of dinosaur braincases reveal details about their sensory abilities and intelligence.
+Mass Extinction Events: The end-Cretaceous extinction that wiped out dinosaurs was one of several mass extinction events in Earth's history.
+Fossilization: Dinosaur bones fossilize through a process called permineralization, where minerals replace organic material.
+Dinosaur Soft Tissue: Rare finds of preserved soft tissue provide insights into dinosaur physiology.
+Dinosaur Nests: Some dinosaur species built nests and showed signs of caring for their young.
+Dinosaur Migration: Some evidence suggests that certain dinosaurs may have migrated seasonally.
+Dinosaur Tail Clubs: Ankylosaurus had a bony club at the end of its tail, likely used for defense.
+Dinosaur Heart: Fossil evidence suggests that some dinosaurs had four-chambered hearts, similar to birds and mammals.
+Dinosaur Intelligence: Theropods like Troodon had relatively large brains and may have been among the more intelligent dinosaurs.
+Dinosaur Teeth: The teeth of herbivorous dinosaurs were adapted for grinding plants, while carnivorous dinosaurs had sharp teeth for tearing meat.
+Dinosaur Growth: Some dinosaurs, like Tyrannosaurus rex, experienced rapid growth spurts during their teenage years.
+Dinosaur Skin Color: Recent studies suggest that some dinosaurs had a variety of skin colors, potentially for camouflage or display.
+Dinosaur Brain-to-Body Ratio: Despite their large size, many dinosaurs had small brains relative to their body mass.
+Oldest Dinosaur Fossil: The oldest known dinosaur fossils date back to around 230 million years ago.
+Dinosaur Cloning: Despite popular culture, cloning dinosaurs from DNA, as depicted in movies like Jurassic Park, is currently not possible due to the degradation of genetic material over millions of years.

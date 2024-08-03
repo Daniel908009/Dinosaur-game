@@ -56,13 +56,13 @@ def reset():
     switch_cycle = False
     clouds_group.empty()
     # reseting the background music and background loudness, and sound loudness
-    global background_music, background_music_on, current_background_music_loudness, current_sound_loudness, background_music_playing
+    global background_music, background_music_on, current_background_music_loudness, current_sound_loudness, background_music_playing, selected_music
     if background_music_on:
-        background_music = mixer.music.load("sounds/background.mp3")
-        background_music = mixer.music.set_volume(current_background_music_loudness/100)
+        mixer.music.load(str(selected_music))
+        mixer.music.set_volume(current_background_music_loudness/100)
         background_music_playing = False
     else:
-        background_music = mixer.music.stop()
+        mixer.music.stop()
     # reseting the sound effects
     global touchdown, game_over_sound, sound_effects_on, current_sound_loudness, hit_sound
     touchdown = mixer.Sound("sounds/energy_sound.mp3")
@@ -121,7 +121,7 @@ def timer():
 
 # function for the main menu loop
 def main_menu_window(screen):
-    global running, settings, main_menu
+    global running, settings, main_menu, selected_music
     main_menu_running = True
     main_menu_font = pygame.font.Font("freesansbold.ttf", 60)
     scores_window = False
@@ -193,6 +193,7 @@ def main_menu_window(screen):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # checking if the play button was clicked
                 if WIDTH//2-resized_play_button.get_width()//2 <= event.pos[0] <= WIDTH//2+resized_play_button.get_width()//2 and HEIGHT//3 <= event.pos[1] <= HEIGHT//3+resized_play_button.get_height():
+                    mixer.music.load(str(selected_music))
                     reset()
                     main_menu_running = False
                     main_menu = False
@@ -218,6 +219,11 @@ def main_menu_window(screen):
         screen.blit(resized_exit_button, (WIDTH//2-resized_exit_button.get_width()//2, HEIGHT//3+resized_play_button.get_height()*2*1.2))
 
         pygame.display.update()
+
+# function that will get a random fact about dinosaurs, this will be displayed on the screen for a few seconds
+def fact_func():
+    # this will be done later
+    pass
 
 # function to display the game over screen
 def game_over_screen():
@@ -485,7 +491,7 @@ def apply_dev_mode(setting1, setting2, setting3, setting4, setting5, setting6, s
         fps_on = False
 
 # function to apply the settings
-def apply_settings(window, setting1, setting2, setting3, setting4, setting5, setting6, setting7, setting8, setting9, setting10, setting11, setting12, setting13, background_music_loudness, sound_loudness):
+def apply_settings(window, setting1, setting2, setting3, setting4, setting5, setting6, setting7, setting8, setting9, setting10, setting11, setting12, setting13, background_music_loudness, sound_loudness, setting14):
     window.destroy()
     # applying the dev mode settings
     apply_dev_mode(setting7, setting8, setting9, setting10, setting11, setting12, setting13)
@@ -525,6 +531,16 @@ def apply_settings(window, setting1, setting2, setting3, setting4, setting5, set
         sound_effects_on = False
     else:
         sound_effects_on = True
+    # applying the setting for the background music type
+    global selected_music
+    if setting14 == "country":
+        selected_music = "sounds/background_music.mp3"
+    elif setting14 == "rock":
+        selected_music = "sounds/rock_question_mark.mp3"
+    elif setting14 == "opera":
+        selected_music = "sounds/opera.mp3"
+    elif setting14 == "techno":
+        selected_music = "sounds/techno.mp3"
     # reseting the game to apply the changes
     reset()
 
@@ -532,7 +548,7 @@ def apply_settings(window, setting1, setting2, setting3, setting4, setting5, set
 def settings_window():
     window = tkinter.Tk()
     window.title("Settings")
-    window.geometry("700x400")
+    window.geometry("700x450")
     window.resizable(False, False)
     window.iconbitmap("main_assets/setting.ico")
     # setting up the main label
@@ -612,6 +628,20 @@ def settings_window():
     background_music_loud.set(current_background_music_loudness)
     background_music_loudness_slider = tkinter.Scale(frame, from_=0, to=100, orient="horizontal", variable=background_music_loud)
     background_music_loudness_slider.grid(row=7, column=1)
+    # setting for the background music type
+    background_music_type = tkinter.Label(frame, text="Background music type", font=("Arial", 16))
+    background_music_type.grid(row=8, column=0)
+    e14 = tkinter.StringVar()
+    if selected_music == "sounds/background.mp3":
+        e14.set("country")
+    elif selected_music == "sounds/rock_question_mark.mp3":
+        e14.set("rock")
+    elif selected_music == "sounds/opera.mp3":
+        e14.set("opera")
+    elif selected_music == "sounds/techno.mp3":
+        e14.set("techno")
+    option_menu2 = tkinter.OptionMenu(frame, e14, "country", "rock", "opera", "techno")
+    option_menu2.grid(row=8, column=1)
     # settings for dev mode
     setting7 = tkinter.Label(frame, text="Dev mode", font=("Arial", 16))
     setting7.grid(row=0, column=2)
@@ -684,7 +714,7 @@ def settings_window():
     setting13_checkbox.grid(row=6, column=3)
 
     # setting up the apply button
-    apply_button = tkinter.Button(window, text="Apply", font=("Arial", 16), command= lambda: apply_settings(window, e1.get(), e2.get(), e3.get(), e4.get(), e5.get(), e6.get(), e7.get(), e8.get(), e9.get(), e10.get(), e11.get(), e12.get(), e13.get(), background_music_loudness_slider.get(), sound_loudness_slider.get()))
+    apply_button = tkinter.Button(window, text="Apply", font=("Arial", 16), command= lambda: apply_settings(window, e1.get(), e2.get(), e3.get(), e4.get(), e5.get(), e6.get(), e7.get(), e8.get(), e9.get(), e10.get(), e11.get(), e12.get(), e13.get(), background_music_loudness_slider.get(), sound_loudness_slider.get(), e14.get()))
     apply_button.pack(side="bottom")
     window.mainloop()
 
@@ -714,6 +744,9 @@ class Dinosaur(pygame.sprite.Sprite):
         else:
             win.blit(self.image_night, (self.rect.x, self.rect.y))
     def move(self, change):
+
+        # I think that the player movement is to simple, I will have to later adjust it to be more nice
+
         # if the players y is close enough to the ground then he will be placed on the ground
         if self.rect.y > HEIGHT//3*2-10 and self.rect.y < HEIGHT//3*2:
             self.rect.y = HEIGHT//3 * 2
@@ -857,8 +890,9 @@ pygame.display.set_icon(icon)
 base_size = WIDTH//16
 current_background_music_loudness = 50
 current_sound_loudness = 50
-background_music = mixer.music.load("sounds/background.mp3")
-background_music = mixer.music.set_volume(current_background_music_loudness/100)
+mixer.music.load("sounds/main_menu_music.mp3")
+mixer.music.set_volume(current_background_music_loudness/100)
+selected_music = "sounds/background.mp3"
 background_music_on = True
 background_music_playing = False
 game_over_sound = mixer.Sound("sounds/game_over_sound.mp3")
@@ -924,14 +958,14 @@ tumble_night = pygame.image.load('tumble1_night.png')
 night_background_images = [backgrounddino1_night, backgroundegg_night, backgroundcrater1_night, backgroundcrater2_night, tumble_night, backgroundcrater3_night, backgroundcrater4_night]
 day_background_images = [backgrounddino1, backgroundegg, backgroundcrater1, backgroundcrater2, tumble, backgroundcrater3, backgroundcrater4]
 # clouds images
-cloud1_day = pygame.image.load('cloud1_day.png')
-cloud2_day = pygame.image.load('cloud2_day.png')
-cloud1_night = pygame.image.load('cloud1_night.png')
-cloud2_night = pygame.image.load('cloud2_night.png')
-cloud3_day = pygame.image.load('cloud3_day.png')
-cloud3_night = pygame.image.load('cloud3_night.png')
-cloud4_day = pygame.image.load('cloud4_day.png')
-cloud4_night = pygame.image.load('cloud4_night.png')
+cloud1_day = pygame.image.load('sky_images/cloud1_day.png')
+cloud2_day = pygame.image.load('sky_images/cloud2_day.png')
+cloud1_night = pygame.image.load('sky_images/cloud1_night.png')
+cloud2_night = pygame.image.load('sky_images/cloud2_night.png')
+cloud3_day = pygame.image.load('sky_images/cloud3_day.png')
+cloud3_night = pygame.image.load('sky_images/cloud3_night.png')
+cloud4_day = pygame.image.load('sky_images/cloud4_day.png')
+cloud4_night = pygame.image.load('sky_images/cloud4_night.png')
 
 clouds_images_day = [cloud1_day, cloud2_day, cloud3_day, cloud4_day]
 clouds_images_night = [cloud1_night, cloud2_night, cloud3_night, cloud4_night]
@@ -946,8 +980,8 @@ spawn_background_object = False
 when_will_spawn_background_object = random.randint(score+5, score+20)
 
 # loading the sun and moon images
-sun = pygame.image.load('sun.png')
-moon = pygame.image.load('moon.png')
+sun = pygame.image.load('sky_images/sun.png')
+moon = pygame.image.load('sky_images/moon.png')
 resized_sun = pygame.transform.scale(sun, (base_size*1.5, base_size*1.5))
 resized_moon = pygame.transform.scale(moon, (base_size*1.5, base_size*1.5))
 
@@ -1007,6 +1041,9 @@ while running:
 
     # checking if the main menu is on
     if main_menu:
+        mixer.music.stop()
+        mixer.music.load("sounds/main_menu_music.mp3")
+        mixer.music.play(-1)
         main_menu_window(win)
 
     # starting the timer thread
@@ -1220,6 +1257,8 @@ while running:
             player.lives += 1
         elif powerup.type == "powerup3":
             chance_of_powerup_spawn += 0.5
+        elif powerup.type == "powerup4":
+            fact_func()
         powerups.remove(powerup)
 
     # this is the day night cycle switching, it will be used later when I add the opposite color images
