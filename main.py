@@ -77,7 +77,8 @@ def reset():
 
 # function to update the timer
 def timer():
-    global time, game_over, settings, running, switch_cycle, cycle, cactus, timer_stop, background_objects, spawn_background_object, when_will_spawn_background_object, when_will_cloud, spawn_cloud, clouds_group, score
+    global time, game_over, settings, running, switch_cycle, cycle, cactus, timer_stop, background_objects, spawn_background_object, when_will_spawn_background_object, when_will_cloud, spawn_cloud, clouds_group, score, fact
+    i = 0
     while running:
         while game_over and running:
             pass
@@ -116,6 +117,16 @@ def timer():
             clouds_group.add(Clouds())
             spawn_cloud = False
             when_will_cloud = random.randint(score+5, score+20)
+        # checking if there is a fact to display, the actual drawing is done in the main loop
+        #print(fact)
+        if fact != "":
+            #print(i)
+            if i < 10:
+                i += 1
+            elif i == 10:
+                fact = ""
+                i = 0
+                #print("fact reseted")
 
         clock.tick(1)
 
@@ -222,8 +233,18 @@ def main_menu_window(screen):
 
 # function that will get a random fact about dinosaurs, this will be displayed on the screen for a few seconds
 def fact_func():
-    # this will be done later
-    pass
+    global fact
+    # getting the facts from the file
+    with open("random info file.txt", "r") as file:
+        facts = file.readlines()
+    facts = [fact.strip() for fact in facts]
+    file.close()
+    # getting a random fact
+    fact = random.choice(facts)
+    # splitting the fact into multiple lines if its too long
+    #if len()
+    # this will may be implemented in the future
+    print(fact)
 
 # function to display the game over screen
 def game_over_screen():
@@ -372,26 +393,26 @@ def dev_mode_images_change():
         dinosaur_night_ducked = pygame.image.load('main_assets/dinosaur2_ducked.png')
         dinosaur_day2_ducked = pygame.image.load('main_assets/dinosaur1_2_ducked.png')
         dinosaur_night2_ducked = pygame.image.load('main_assets/dinosaur2_2_ducked.png')
-        cactus1 = pygame.image.load('cactus1.png')
-        cactus2 = pygame.image.load('cactus2.png')
-        cactus3 = pygame.image.load('cactus3.png')
-        cactus4 = pygame.image.load('cactus4.png')
-        cactus5 = pygame.image.load('cactus5.png')
-        cactus6 = pygame.image.load('cactus6.png')
-        cactus7 = pygame.image.load('cactus7.png')
-        cactus8 = pygame.image.load('cactus8.png')
-        cactus9 = pygame.image.load('cactus9.png')
-        cactus10 = pygame.image.load('cactus10.png')
-        cactus1_night = pygame.image.load('cactus1_night.png')
-        cactus2_night = pygame.image.load('cactus2_night.png')
-        cactus3_night = pygame.image.load('cactus3_night.png')
-        cactus4_night = pygame.image.load('cactus4_night.png')
-        cactus5_night = pygame.image.load('cactus5_night.png')
-        cactus6_night = pygame.image.load('cactus6_night.png')
-        cactus7_night = pygame.image.load('cactus7_night.png')
-        cactus8_night = pygame.image.load('cactus8_night.png')
-        cactus9_night = pygame.image.load('cactus9_night.png')
-        cactus10_night = pygame.image.load('cactus10_night.png')
+        cactus1 = pygame.image.load('main_cactuses/cactus1.png')
+        cactus2 = pygame.image.load('main_cactuses/cactus2.png')
+        cactus3 = pygame.image.load('main_cactuses/cactus3.png')
+        cactus4 = pygame.image.load('main_cactuses/cactus4.png')
+        cactus5 = pygame.image.load('main_cactuses/cactus5.png')
+        cactus6 = pygame.image.load('main_cactuses/cactus6.png')
+        cactus7 = pygame.image.load('main_cactuses/cactus7.png')
+        cactus8 = pygame.image.load('main_cactuses/cactus8.png')
+        cactus9 = pygame.image.load('main_cactuses/cactus9.png')
+        cactus10 = pygame.image.load('main_cactuses/cactus10.png')
+        cactus1_night = pygame.image.load('main_cactuses/cactus1_night.png')
+        cactus2_night = pygame.image.load('main_cactuses/cactus2_night.png')
+        cactus3_night = pygame.image.load('main_cactuses/cactus3_night.png')
+        cactus4_night = pygame.image.load('main_cactuses/cactus4_night.png')
+        cactus5_night = pygame.image.load('main_cactuses/cactus5_night.png')
+        cactus6_night = pygame.image.load('main_cactuses/cactus6_night.png')
+        cactus7_night = pygame.image.load('main_cactuses/cactus7_night.png')
+        cactus8_night = pygame.image.load('main_cactuses/cactus8_night.png')
+        cactus9_night = pygame.image.load('main_cactuses/cactus9_night.png')
+        cactus10_night = pygame.image.load('main_cactuses/cactus10_night.png')
         pterodactyl_day = pygame.image.load('main_assets/pterodactyl_temporary.png')
         pterodactyl_night = pygame.image.load('main_assets/pterodactyl_temporary2.png')
         powerup1_day = pygame.image.load('powerups/power_up1_day.png')
@@ -400,8 +421,8 @@ def dev_mode_images_change():
         powerup1_night = pygame.image.load('powerups/power_up1_night.png')
         powerup2_night = pygame.image.load('powerups/power_up2_night.png')
         powerup3_night = pygame.image.load('powerups/power_up3_night.png')
-        powerup4_day = pygame.image.load('powerup4.png')
-        powerup4_night = pygame.image.load('powerup4_night.png')
+        powerup4_day = pygame.image.load('powerups/powerup4.png')
+        powerup4_night = pygame.image.load('powerups/powerup4_night.png')
     # resizing the images
     resized_dinosaur_day = pygame.transform.scale(dinosaur_day, (base_size*2, base_size*2))
     resized_dinosaur_night = pygame.transform.scale(dinosaur_night, (base_size*2, base_size*2))
@@ -534,7 +555,7 @@ def apply_settings(window, setting1, setting2, setting3, setting4, setting5, set
     # applying the setting for the background music type
     global selected_music
     if setting14 == "country":
-        selected_music = "sounds/background_music.mp3"
+        selected_music = "sounds/background.mp3"
     elif setting14 == "rock":
         selected_music = "sounds/rock_question_mark.mp3"
     elif setting14 == "opera":
@@ -831,8 +852,10 @@ class PowerUp(pygame.sprite.Sprite):
             self.type = "powerup1"
         elif self.index == 1:
             self.type = "powerup2"
-        else:
+        elif self.index == 2:
             self.type = "powerup3"
+        elif self.index == 3:
+            self.type = "powerup4"
     def move(self):
         self.rect.x -= 10
 
@@ -929,30 +952,30 @@ pterodactyl_heights = [HEIGHT//3*2-resized_pterodactyl_day.get_height(), HEIGHT/
 pterodactyls = pygame.sprite.Group()
 
 # images used in the menu
-play_button = pygame.image.load('play_button.png')
+play_button = pygame.image.load('main_assets/play_button.png')
 resized_play_button = pygame.transform.scale(play_button, (base_size*5, base_size*2))
-exit_button = pygame.image.load('exit_button.png')
+exit_button = pygame.image.load('main_assets/exit_button.png')
 resized_exit_button = pygame.transform.scale(exit_button, (base_size*5, base_size*2))
-scores_button = pygame.image.load('scores_button.png')
+scores_button = pygame.image.load('main_assets/scores_button.png')
 resized_scores_button = pygame.transform.scale(scores_button, (base_size*5, base_size*2))
-back_arrow = pygame.image.load('back_arrow.png')
+back_arrow = pygame.image.load('main_assets/back_arrow.png')
 resized_back_arrow = pygame.transform.scale(back_arrow, (base_size*2, base_size*2))
 
 # images used in the background
-backgrounddino1 = pygame.image.load('background_dinosaur1.png')
-backgrounddino1_night = pygame.image.load('background_dinosaur1_night.png')
-backgroundegg = pygame.image.load('egg.png')
-backgroundegg_night = pygame.image.load('egg_night.png')
-backgroundcrater1 = pygame.image.load('crater1.png')
-backgroundcrater1_night = pygame.image.load('crater1_night.png')
-backgroundcrater2 = pygame.image.load('crater2.png')
-backgroundcrater2_night = pygame.image.load('crater2_night.png')
-backgroundcrater3 = pygame.image.load('crater3.png')
-backgroundcrater3_night = pygame.image.load('crater3_night.png')
-backgroundcrater4 = pygame.image.load('crater4.png')
-backgroundcrater4_night = pygame.image.load('crater4_night.png')
-tumble = pygame.image.load('tumble1.png')
-tumble_night = pygame.image.load('tumble1_night.png')
+backgrounddino1 = pygame.image.load('background_images/background_dinosaur1.png')
+backgrounddino1_night = pygame.image.load('background_images/background_dinosaur1_night.png')
+backgroundegg = pygame.image.load('background_images/egg.png')
+backgroundegg_night = pygame.image.load('background_images/egg_night.png')
+backgroundcrater1 = pygame.image.load('background_images/crater1.png')
+backgroundcrater1_night = pygame.image.load('background_images/crater1_night.png')
+backgroundcrater2 = pygame.image.load('background_images/crater2.png')
+backgroundcrater2_night = pygame.image.load('background_images/crater2_night.png')
+backgroundcrater3 = pygame.image.load('background_images/crater3.png')
+backgroundcrater3_night = pygame.image.load('background_images/crater3_night.png')
+backgroundcrater4 = pygame.image.load('background_images/crater4.png')
+backgroundcrater4_night = pygame.image.load('background_images/crater4_night.png')
+tumble = pygame.image.load('background_images/tumble1.png')
+tumble_night = pygame.image.load('background_images/tumble1_night.png')
 
 
 night_background_images = [backgrounddino1_night, backgroundegg_night, backgroundcrater1_night, backgroundcrater2_night, tumble_night, backgroundcrater3_night, backgroundcrater4_night]
@@ -993,9 +1016,9 @@ settings_button = pygame.image.load('main_assets/settings.png')
 resized_settings_button = pygame.transform.scale(settings_button, (base_size, base_size))
 settings_button_night = pygame.image.load('main_assets/settings_night.png')
 resized_settings_button_night = pygame.transform.scale(settings_button_night, (base_size, base_size))
-home_button = pygame.image.load('home_button.png')
+home_button = pygame.image.load('main_assets/home_button.png')
 resized_home_button = pygame.transform.scale(home_button, (base_size, base_size))
-home_button_night = pygame.image.load('home_button_night.png')
+home_button_night = pygame.image.load('main_assets/home_button_night.png')
 resized_home_button_night = pygame.transform.scale(home_button_night, (base_size, base_size))
 
 # powerups variables and group
@@ -1005,9 +1028,11 @@ powerup_picked_up = pygame.mixer.Sound("sounds/powerup_pickedup.mp3")
 powerup_picked_up.set_volume(current_sound_loudness/100)
 chance_of_powerup_spawn = 5
 spawn_powerup = False
+fact = ""
 
-# setting up a font for the texts
+# setting up fonts for the texts
 font = pygame.font.Font(None, HEIGHT//18)
+fact_font = pygame.font.Font("freesansbold.ttf", HEIGHT//40)
 
 # creating the dinosaur/player
 player = Dinosaur()
@@ -1137,6 +1162,13 @@ while running:
     else:
         text = font.render(str(time[0])+"m "+str(time[1]) + "s", True, (255, 255, 255))
     win.blit(text, (WIDTH//2-text.get_width()//2, 10))
+    # drawing the fact in the top middle of the screen
+    if fact != "":
+        if cycle == "day":
+            text = fact_font.render(fact, True, (0, 0, 0))
+        else:
+            text = fact_font.render(fact, True, (255, 255, 255))
+        win.blit(text, (WIDTH//2-text.get_width()//2, text.get_height()*5))
     # drawing the number of lives in the top left corner below the score
     if cycle == "day":
         text = font.render("Lives: "+str(player.lives), True, (0, 0, 0))
