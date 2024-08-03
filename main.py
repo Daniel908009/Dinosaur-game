@@ -20,16 +20,19 @@ def reset():
     dev_mode_images_change()
 
     # resizing the settings button
-    global resized_settings_button, resized_settings_button_night
+    global resized_settings_button, resized_settings_button_night, resized_home_button, resized_home_button_night
     settings_button = pygame.image.load('main_assets/settings.png')
     resized_settings_button = pygame.transform.scale(settings_button, (base_size, base_size))
     settings_button_night = pygame.image.load('main_assets/settings_night.png')
     resized_settings_button_night = pygame.transform.scale(settings_button_night, (base_size, base_size))
+    resized_home_button = pygame.transform.scale(home_button, (base_size, base_size))
+    resized_home_button_night = pygame.transform.scale(home_button_night, (base_size, base_size))
     # resizing the buttons
-    global resized_play_button, resized_scores_button, resized_exit_button
+    global resized_play_button, resized_scores_button, resized_exit_button, resized_back_arrow
     resized_exit_button = pygame.transform.scale(exit_button, (base_size*5, base_size*2))
     resized_play_button = pygame.transform.scale(play_button, (base_size*5, base_size*2))
     resized_scores_button = pygame.transform.scale(scores_button, (base_size*5, base_size*2))
+    resized_back_arrow = pygame.transform.scale(back_arrow, (base_size*2, base_size*2))
     # reseting the background objects
     global background_objects, spawn_background_object, when_will_spawn_background_object, score
     background_objects.empty()
@@ -68,6 +71,9 @@ def reset():
     touchdown.set_volume(current_sound_loudness/100)
     game_over_sound.set_volume(current_sound_loudness/100)
     hit_sound.set_volume(current_sound_loudness/100)
+    # getting the new ptarodactyl height
+    global pterodactyl_heights
+    pterodactyl_heights = [HEIGHT//3*2-resized_pterodactyl_day.get_height(), HEIGHT//3*2-resized_pterodactyl_day.get_height()*2, HEIGHT//3*2+resized_pterodactyl_day.get_height()]
 
 # function to update the timer
 def timer():
@@ -118,7 +124,61 @@ def main_menu_window(screen):
     global running, settings, main_menu
     main_menu_running = True
     main_menu_font = pygame.font.Font("freesansbold.ttf", 60)
+    scores_window = False
+    # getting the first 10 scores from the file
+    try:
+        with open("scores.txt", "r") as file:
+            scores = file.readlines()
+        scores = [score.strip() for score in scores]
+        scores = [score.split() for score in scores]
+        scores = sorted(scores, key=lambda x: int(x[1]), reverse=True)
+        file.close()
+    except FileNotFoundError:
+        scores = []
+    # creating a font for the scores
+    scores_font = pygame.font.Font("freesansbold.ttf", HEIGHT//20)
+    # main menu loop
     while main_menu_running:
+        # in case player wants to see the scores, it will be done through this loop
+        while scores_window:
+            # Handling events
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    main_menu_running = False
+                    running = False
+                    settings = False
+                    scores_window = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_s:
+                        settings_window()
+                    if event.key == pygame.K_r:
+                        reset()
+                    if event.key == pygame.K_q:
+                        scores_window = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    # checking if the back arrow was clicked
+                    if 10 <= event.pos[0] <= 10+resized_back_arrow.get_width() and 10 <= event.pos[1] <= 10+resized_back_arrow.get_height():
+                        scores_window = False
+            # background color
+            win.fill((255, 255, 255))
+            # displaying the main label
+            text = main_menu_font.render("Scores", True, (0, 0, 0))
+            win.blit(text, (WIDTH//2-text.get_width()//2, HEIGHT//6))
+            # displaying a back arrow
+            win.blit(resized_back_arrow, (10, 10))
+            # displaying the scores(only the top 10/which means the first 10 lines)
+            if scores == []:
+                text = main_menu_font.render("No scores yet", True, (0, 0, 0))
+                win.blit(text, (WIDTH//2-text.get_width()//2, HEIGHT//3))
+            else:
+                for i in range(10):
+                    try:
+                        text = scores_font.render(str(i+1)+". Name: "+scores[i][0]+", score: "+scores[i][1], True, (0, 0, 0))
+                        win.blit(text, (WIDTH//2-text.get_width()//2, HEIGHT//3+text.get_height()*i))
+                    except IndexError:
+                        pass
+            pygame.display.update()
+
         # Handling events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -133,18 +193,14 @@ def main_menu_window(screen):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # checking if the play button was clicked
                 if WIDTH//2-resized_play_button.get_width()//2 <= event.pos[0] <= WIDTH//2+resized_play_button.get_width()//2 and HEIGHT//3 <= event.pos[1] <= HEIGHT//3+resized_play_button.get_height():
-                    print("play")
                     reset()
                     main_menu_running = False
                     main_menu = False
                 # checking if the scores button was clicked
                 if WIDTH//2-resized_scores_button.get_width()//2 <= event.pos[0] <= WIDTH//2+resized_scores_button.get_width()//2 and HEIGHT//3+resized_play_button.get_height()*1.2 <= event.pos[1] <= HEIGHT//3+resized_play_button.get_height()*1.2+resized_scores_button.get_height():
-                    print("scores")
-                    # later on I will add a highscore system that will be accessed here
-                    pass
+                    scores_window = True
                 # checking if the exit button was clicked
                 if WIDTH//2-resized_exit_button.get_width()//2 <= event.pos[0] <= WIDTH//2+resized_exit_button.get_width()//2 and HEIGHT//3+resized_play_button.get_height()*2*1.2 <= event.pos[1] <= HEIGHT//3+resized_play_button.get_height()*2*1.2+resized_exit_button.get_height():
-                    print("exit")
                     main_menu_running = False
                     running = False
                     settings = False
@@ -165,13 +221,36 @@ def main_menu_window(screen):
 
 # function to display the game over screen
 def game_over_screen():
-    global running, game_over, game_over_sound, main_menu
+    global running, game_over, game_over_sound, main_menu, player_name, score
     game_over = True
     global background_music
     background_music = mixer.music.stop()
     game_over_sound.play()
     if sound_effects_on:
         game_over_sound.play()
+    # now writing the score to a file(each score on a new line)
+    try:
+        with open("scores.txt", "a") as file:
+            file.write(str(player_name)+" "+str(score)+"\n")
+    except FileNotFoundError:
+        with open("scores.txt", "w") as file:
+            file.write(str(player_name)+" "+str(score)+"\n")
+    file.close()
+    # now reading the content of the file and ordering it from the highest to the lowest(this will be usefull in the scores button)
+    with open("scores.txt", "r") as file:
+        scores = file.readlines()
+    scores = [score.strip() for score in scores]
+    #print(scores)
+    scores = [score.split() for score in scores]
+    #print(scores)
+    scores = sorted(scores, key=lambda x: int(x[1]), reverse=True)
+    file.close()
+    # now writing the ordered scores to the file
+    with open("scores.txt", "w") as file:
+        for score1 in scores:
+            file.write(score1[0]+" "+score1[1]+"\n")
+    file.close()
+    # game over loop
     while game_over:
         # Handling events
         for event in pygame.event.get():
@@ -237,7 +316,9 @@ def game_over_screen():
 def dev_mode_images_change():
     global dev_mode
     if dev_mode:
-        global dinosaur_day, dinosaur_day2, dinosaur_night, cactus1, cactus2, cactus3, cactus4, cactus5, cactus6, cactus7, cactus8, cactus9, cactus10, cactus1_night, cactus2_night, cactus3_night, cactus4_night, cactus5_night, cactus6_night, cactus7_night, cactus8_night, cactus9_night, cactus10_night, pterodactyl_day, pterodactyl_night, powerup1_day, powerup2_day, powerup3_day, powerup1_night, powerup2_night, powerup3_night, resized_dinosaur_day, resized_dinosaur_day2, resized_dinosaur_night, resized_dinosaur_night2, resized_pterodactyl_day, resized_pterodactyl_night, resized_powerup1_day, resized_powerup2_day, resized_powerup3_day, resized_powerup1_night, resized_powerup2_night, resized_powerup3_night, dinosaur_night2, dinosaur_day_ducked, dinosaur_night_ducked, dinosaur_day2_ducked, dinosaur_night2_ducked, resized_dinosaur_day_ducked, resized_dinosaur_night_ducked, resized_dinosaur_day2_ducked, resized_dinosaur_night2_ducked
+        global dinosaur_day, dinosaur_day2, dinosaur_night, cactus1, cactus2, cactus3, cactus4, cactus5, cactus6, cactus7, cactus8, cactus9, cactus10, cactus1_night, cactus2_night, cactus3_night, cactus4_night, cactus5_night, cactus6_night, cactus7_night, cactus8_night, cactus9_night, cactus10_night, pterodactyl_day, pterodactyl_night, powerup1_day, powerup2_day, powerup3_day, powerup1_night, powerup2_night, powerup3_night, resized_dinosaur_day, resized_dinosaur_day2, resized_dinosaur_night, resized_dinosaur_night2, resized_pterodactyl_day, resized_pterodactyl_night, resized_powerup1_day, resized_powerup2_day, resized_powerup3_day, resized_powerup1_night, resized_powerup2_night, resized_powerup3_night, dinosaur_night2, dinosaur_day_ducked, dinosaur_night_ducked, dinosaur_day2_ducked, dinosaur_night2_ducked, resized_dinosaur_day_ducked, resized_dinosaur_night_ducked, resized_dinosaur_day2_ducked, resized_dinosaur_night2_ducked, powerup4_day, powerup4_night
+        # i will need to do global twice, because there are so many variables I dont want to scroll all the way to the right
+        global resized_powerup4_day, resized_powerup4_night
         dinosaur_day = pygame.image.load('dev_mode_assets/dinosaur1_dev.png')
         dinosaur_day2 = pygame.image.load('dev_mode_assets/dinosaur1_2_dev.png')
         dinosaur_night = pygame.image.load('dev_mode_assets/dinosaur2_dev.png')
@@ -274,6 +355,8 @@ def dev_mode_images_change():
         powerup1_night = pygame.image.load('dev_mode_assets/power_up1_night_dev.png')
         powerup2_night = pygame.image.load('dev_mode_assets/power_up2_night_dev.png')
         powerup3_night = pygame.image.load('dev_mode_assets/power_up3_night_dev.png')
+        #powerup4_day = pygame.image.load('dev_mode_assets/power_up4_day_dev.png')
+        #powerup4_night = pygame.image.load('dev_mode_assets/power_up4_night_dev.png')
     else:
         dinosaur_day = pygame.image.load('main_assets/dinosaur1.png')
         dinosaur_day2 = pygame.image.load('main_assets/dinosaur1_2.png')
@@ -311,6 +394,8 @@ def dev_mode_images_change():
         powerup1_night = pygame.image.load('powerups/power_up1_night.png')
         powerup2_night = pygame.image.load('powerups/power_up2_night.png')
         powerup3_night = pygame.image.load('powerups/power_up3_night.png')
+        powerup4_day = pygame.image.load('powerup4.png')
+        powerup4_night = pygame.image.load('powerup4_night.png')
     # resizing the images
     resized_dinosaur_day = pygame.transform.scale(dinosaur_day, (base_size*2, base_size*2))
     resized_dinosaur_night = pygame.transform.scale(dinosaur_night, (base_size*2, base_size*2))
@@ -325,22 +410,16 @@ def dev_mode_images_change():
     resized_powerup1_day = pygame.transform.scale(powerup1_day, (base_size, base_size))
     resized_powerup2_day = pygame.transform.scale(powerup2_day, (base_size, base_size))
     resized_powerup3_day = pygame.transform.scale(powerup3_day, (base_size, base_size))
+    resized_powerup4_day = pygame.transform.scale(powerup4_day, (base_size, base_size))
     resized_powerup1_night = pygame.transform.scale(powerup1_night, (base_size, base_size))
     resized_powerup2_night = pygame.transform.scale(powerup2_night, (base_size, base_size))
     resized_powerup3_night = pygame.transform.scale(powerup3_night, (base_size, base_size))
-    # resizing powerups
-    # day
-    resized_powerup1_day = pygame.transform.scale(powerup1_day, (base_size, base_size))
-    resized_powerup2_day = pygame.transform.scale(powerup2_day, (base_size, base_size))
-    resized_powerup3_day = pygame.transform.scale(powerup3_day, (base_size, base_size))
+    resized_powerup4_night = pygame.transform.scale(powerup4_night, (base_size, base_size))
+    # now filling the lists with the resized images, also here was a mistake, for some reason I resized the powerups twice
+    # however it didnt visibly affect the game, its fixed now
     global resized_powerups_day, resized_powerups_night
-    resized_powerups_day = [resized_powerup1_day, resized_powerup2_day, resized_powerup3_day]
-    # night
-    resized_powerup1_night = pygame.transform.scale(powerup1_night, (base_size, base_size))
-    resized_powerup2_night = pygame.transform.scale(powerup2_night, (base_size, base_size))
-    resized_powerup3_night = pygame.transform.scale(powerup3_night, (base_size, base_size))
-
-    resized_powerups_night = [resized_powerup1_night, resized_powerup2_night, resized_powerup3_night]
+    resized_powerups_day = [resized_powerup1_day, resized_powerup2_day, resized_powerup3_day, resized_powerup4_day]
+    resized_powerups_night = [resized_powerup1_night, resized_powerup2_night, resized_powerup3_night, resized_powerup4_night]
     # pterodactyls images resizing
     resized_pterodactyl_day = pygame.transform.scale(pterodactyl_day, (base_size*1.5, base_size))
     resized_pterodactyl_night = pygame.transform.scale(pterodactyl_night, (base_size*1.5, base_size))
@@ -822,6 +901,8 @@ exit_button = pygame.image.load('exit_button.png')
 resized_exit_button = pygame.transform.scale(exit_button, (base_size*5, base_size*2))
 scores_button = pygame.image.load('scores_button.png')
 resized_scores_button = pygame.transform.scale(scores_button, (base_size*5, base_size*2))
+back_arrow = pygame.image.load('back_arrow.png')
+resized_back_arrow = pygame.transform.scale(back_arrow, (base_size*2, base_size*2))
 
 # images used in the background
 backgrounddino1 = pygame.image.load('background_dinosaur1.png')
@@ -878,6 +959,10 @@ settings_button = pygame.image.load('main_assets/settings.png')
 resized_settings_button = pygame.transform.scale(settings_button, (base_size, base_size))
 settings_button_night = pygame.image.load('main_assets/settings_night.png')
 resized_settings_button_night = pygame.transform.scale(settings_button_night, (base_size, base_size))
+home_button = pygame.image.load('home_button.png')
+resized_home_button = pygame.transform.scale(home_button, (base_size, base_size))
+home_button_night = pygame.image.load('home_button_night.png')
+resized_home_button_night = pygame.transform.scale(home_button_night, (base_size, base_size))
 
 # powerups variables and group
 powerups = pygame.sprite.Group()
@@ -892,6 +977,7 @@ font = pygame.font.Font(None, HEIGHT//18)
 
 # creating the dinosaur/player
 player = Dinosaur()
+player_name = "Player"
 player_change = 0
 distance_travelled = 0
 distance_when_hit = 0
@@ -961,9 +1047,14 @@ while running:
             if event.key == pygame.K_UP or event.key == pygame.K_w or event.key == pygame.K_SPACE:
                 player_change = 0
         if event.type == pygame.MOUSEBUTTONDOWN:
+            # checking if the settings button is clicked
             if WIDTH-resized_settings_button.get_width() <= event.pos[0] <= WIDTH and 10 <= event.pos[1] <= resized_settings_button_night.get_height()+10:
                 settings = True
                 settings_window()
+            # checking if the home button is clicked
+            if WIDTH-resized_home_button.get_width() <= event.pos[0] <= WIDTH and 30+resized_settings_button.get_height() <= event.pos[1] <= 30+resized_settings_button.get_height()+resized_home_button.get_height():
+                mixer.music.stop()
+                main_menu = True
     
     # applying changes in position
     player.move(player_change)
@@ -998,6 +1089,11 @@ while running:
         win.blit(resized_settings_button, (WIDTH-resized_settings_button_night.get_width(), 10))
     else:
         win.blit(resized_settings_button_night, (WIDTH-resized_settings_button_night.get_width(), 10))
+    # drawing a home button in the top right corner below the settings button
+    if cycle == "day":
+        win.blit(resized_home_button, (WIDTH-resized_home_button.get_width(), 30+resized_settings_button.get_height()))
+    else:
+        win.blit(resized_home_button_night, (WIDTH-resized_home_button.get_width(), 30+resized_settings_button.get_height()))
     # drawing the time in the top middle of the screen
     if cycle == "day":
         text = font.render(str(time[0])+"m "+str(time[1]) + "s", True, (0, 0, 0))

@@ -1,0 +1,9 @@
+# this file will be used in combination with a new powerup, when player touches the power up a random fact about the dinosaurs will appear.
+# example facts
+Dinosaurs are a group of reptiles that have lived on Earth for about 245 million years.
+The term "Dinosauria" was coined in 1842 by the English naturalist Sir Richard Owen.
+Dinosaur fossils have been found on all seven continents.
+All non-avian dinosaurs went extinct about 66 million years ago.
+The longest dinosaur egg ever found was 2 feet long.
+Almost all carnivorous dinosaurs had hollow bones to make them lighter and more agile.
+The most dangerous dinosaur was the Tyrannosaurus rex
