@@ -94,6 +94,7 @@ def timer():
             time[1] = 0
         # the reason why this is here is because if it were in the main loop it would switch the cycle multiple times in a second
         if switch_cycle and not asteroid_cycle:
+            # when a cycle is switched, the cactus and the background objects need to change their images
             if cycle == "day":
                 cycle = "night"
                 cactus.image = cactus.image_night
@@ -140,6 +141,7 @@ def timer():
                     object.image = object.image_night
                 for object in clouds_group:
                     object.image = object.image_night
+            # spawning the asteroids
             if len(asteroids) < 5:
                 asteroid = Asteroid()
                 asteroids.add(asteroid)
@@ -445,8 +447,6 @@ def dev_mode_images_change():
         cactus8_night = pygame.image.load('main_cactuses/cactus8_night.png')
         cactus9_night = pygame.image.load('main_cactuses/cactus9_night.png')
         cactus10_night = pygame.image.load('main_cactuses/cactus10_night.png')
-        pterodactyl_day = pygame.image.load('main_assets/pterodactyl_temporary.png')
-        pterodactyl_night = pygame.image.load('main_assets/pterodactyl_temporary2.png')
         powerup1_day = pygame.image.load('powerups/power_up1_day.png')
         powerup2_day = pygame.image.load('powerups/power_up2_day.png')
         powerup3_day = pygame.image.load('powerups/power_up3_day.png')
@@ -455,6 +455,9 @@ def dev_mode_images_change():
         powerup3_night = pygame.image.load('powerups/power_up3_night.png')
         powerup4_day = pygame.image.load('powerups/powerup4.png')
         powerup4_night = pygame.image.load('powerups/powerup4_night.png')
+        # the pterodactyls were supposed to be temporary, but I now think they fit quite well, so I will keep them
+        pterodactyl_day = pygame.image.load('main_assets/pterodactyl_temporary.png')
+        pterodactyl_night = pygame.image.load('main_assets/pterodactyl_temporary2.png')
     # resizing the images
     resized_dinosaur_day = pygame.transform.scale(dinosaur_day, (base_size*2, base_size*2))
     resized_dinosaur_night = pygame.transform.scale(dinosaur_night, (base_size*2, base_size*2))
@@ -772,6 +775,7 @@ def settings_window():
     window.mainloop()
 
     # classes 
+# the player class
 class Dinosaur(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -808,13 +812,14 @@ class Dinosaur(pygame.sprite.Sprite):
             self.rect.y += player_change
         if self.rect.y < HEIGHT//3*2 - resized_dinosaur_day.get_height()*1.8 and not super_jump_on:
             self.direction = "down"
-            player_change = 5 # speed of the fall
+            player_change = 6 # speed of the fall
         # this is the upper limit of the super jump
         if self.rect.y == HEIGHT//3*2 - resized_dinosaur_day.get_height()*3 and super_jump_on:
             self.direction = "down"
-            player_change = 5
+            player_change = 6
         if self.direction == "down":
             self.rect.y += player_change
+    # update is used for animations of the player and for the ducking
     def update(self):
         self.index += 0.1
         if int(self.index) == 2:
@@ -826,6 +831,7 @@ class Dinosaur(pygame.sprite.Sprite):
             self.image_night = self.images_night_ducked[int(self.index)]
             self.rect.y = HEIGHT//3*2+base_size//2
 
+# cactuses are the obstacles of the game
 class Cactus(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -850,6 +856,7 @@ class Cactus(pygame.sprite.Sprite):
         global distance_travelled
         distance_travelled += self.speed + round(scale_up_speed)
 
+# pterodactyls are the flying cactuses of nature
 class Pterodactyl(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -870,6 +877,7 @@ class Pterodactyl(pygame.sprite.Sprite):
         global distance_travelled
         distance_travelled += self.speed + scale_up_speed
 
+# powerups are used to give the player an advantage, or to make the game more interesting
 class PowerUp(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -893,6 +901,7 @@ class PowerUp(pygame.sprite.Sprite):
     def move(self):
         self.rect.x -= self.speed + round(scale_up_speed)
 
+# background objects are purely for the background, they don't interact with the player
 class BackgroundObject(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -916,9 +925,8 @@ class BackgroundObject(pygame.sprite.Sprite):
         self.speed = 10
     def move(self):
         self.rect.x -= self.speed + round(scale_up_speed)
-    def draw(self, win):
-        win.blit(self.image, (self.rect.x, self.rect.y))
 
+# clouds are used in the background for all cycles
 class Clouds(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -938,9 +946,8 @@ class Clouds(pygame.sprite.Sprite):
         self.speed = 1
     def move(self):
         self.rect.x -= self.speed + round(scale_up_speed)
-    def draw(self, win):
-        win.blit(self.image, (self.rect.x, self.rect.y))
 
+# asteroid class used in the asteroid cycle
 class Asteroid(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -962,6 +969,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.rect.x += self.horizontal_speed
         self.rect.y += self.vertical_speed
 
+# very unlikely to be spawned, so it is lucky
 class Lucky_comet(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -992,6 +1000,7 @@ win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Dino Game")
 icon = pygame.image.load('main_assets/dinosaur1.png')
 pygame.display.set_icon(icon)
+# Key game variables, they have to be so high up because they are used in the classes
 base_size = WIDTH//16
 current_background_music_loudness = 50
 current_sound_loudness = 50
@@ -1020,6 +1029,7 @@ starting_time = [0,0]
 # setting up images through the dev image change function
 dev_mode_images_change()
 
+# game sounds
 touchdown = mixer.Sound("sounds/energy_sound.mp3")
 touchdown.set_volume(current_sound_loudness/100)
 hit_sound = mixer.Sound("sounds/hit_sound.mp3")
@@ -1077,7 +1087,7 @@ stegosaurus_night = pygame.image.load('background_images/stegosaurus_night.png')
 triceratops = pygame.image.load('background_images/triceratops.png')
 triceratops_night = pygame.image.load('background_images/triceratops_night.png')
 
-
+# background images lists
 night_background_images = [backgrounddino1_night, backgroundegg_night, backgroundcrater1_night, backgroundcrater2_night, tumble_night, backgroundcrater3_night, backgroundcrater4_night, dinosaur_skull_night, footprint_night, footprint_rock_night, raptor_night, runner_night, stegosaurus_night, triceratops_night]
 day_background_images = [backgrounddino1, backgroundegg, backgroundcrater1, backgroundcrater2, tumble, backgroundcrater3, backgroundcrater4, dinosaur_skull, footprint, footprint_rock, raptor, runner, stegosaurus, triceratops]
 # clouds images
@@ -1090,6 +1100,7 @@ cloud3_night = pygame.image.load('sky_images/cloud3_night.png')
 cloud4_day = pygame.image.load('sky_images/cloud4_day.png')
 cloud4_night = pygame.image.load('sky_images/cloud4_night.png')
 
+# clouds variables
 clouds_images_day = [cloud1_day, cloud2_day, cloud3_day, cloud4_day]
 clouds_images_night = [cloud1_night, cloud2_night, cloud3_night, cloud4_night]
 clouds_sizes = [base_size*3, base_size*2, base_size*2.5]
@@ -1097,6 +1108,7 @@ clouds_group = pygame.sprite.Group()
 when_will_cloud = random.randint(score+5, score+20)
 spawn_cloud = False
 
+# cactuses variables
 backgroundimage_sizes = [base_size*1.6, base_size*1.5, base_size]
 background_objects = pygame.sprite.Group()
 spawn_background_object = False
@@ -1107,12 +1119,13 @@ lucky_comet_night = pygame.image.load('sky_images/falling_star.png')
 lucky_comet_day = pygame.image.load('sky_images/falling_star_day.png')
 lucky_comets = pygame.sprite.Group()
 
-# asteroid images and variables
+# asteroid images
 asteroid = pygame.image.load('sky_images/asteroid.png')
 asteroid1 = pygame.image.load('sky_images/asteroid2.png')
 asteroid2 = pygame.image.load('sky_images/asteroid3.png')
 asteroid3 = pygame.image.load('sky_images/asteroid4.png')
 
+# asteroid variables
 asteroid_images = [asteroid, asteroid1, asteroid2, asteroid3]
 asteroid_sizes = [base_size, base_size*1.3, base_size*1.6]
 switch_needed = False
@@ -1156,7 +1169,9 @@ fact_buble_night = pygame.image.load("main_assets/fact_buble_night.png")
 
 # creating the dinosaur/player
 player = Dinosaur()
+###############################
 player_name = "Player"
+###############################
 player_change = 0
 distance_travelled = 0
 distance_when_hit = 0
@@ -1173,7 +1188,7 @@ timer_thread = threading.Thread(target=timer)
 time = [0,0]
 timer_stop = False
 
-# main loop
+# main loop variables
 running = True
 game_over = False
 settings = False
@@ -1182,6 +1197,7 @@ switch_cycle = False
 dificulty = "Medium"
 pterodactyl_on = True
 
+# main loop it self
 while running:
 
     # checking if the main menu is on
@@ -1207,7 +1223,7 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE or event.key == pygame.K_UP or event.key == pygame.K_w:
                 if player.rect.y == HEIGHT//3*2:
-                    player_change = -10
+                    player_change = -20
                     player.direction = "up"
             if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 if player.rect.y == HEIGHT//3*2:
@@ -1229,7 +1245,6 @@ while running:
                     player.ducked = False
                     player.rect.y = HEIGHT//3*2
             if event.key == pygame.K_UP or event.key == pygame.K_w or event.key == pygame.K_SPACE:
-                #player_change = 0
                 pass
         if event.type == pygame.MOUSEBUTTONDOWN:
             # checking if the settings button is clicked
@@ -1331,9 +1346,9 @@ while running:
     for enemy in enemies:
         enemy.move()
         if enemy.rect.x < -100-enemy.size:
+            # this ensures that there is only 1 cactus or 1 pterodactyl on the screen at the same time
             if enemy.type == "cactus":
                 enemies.remove(enemy)
-                # this ensures that there is only 1 cactus or 1 pterodactyl on the screen at the same time
                 if pterodactyl_spawn:
                     pterodactyl = Pterodactyl()
                     enemies.add(pterodactyl)
@@ -1350,6 +1365,7 @@ while running:
                         powerup = PowerUp()
                         powerups.add(powerup)
                         spawn_powerup = False
+            # this ensures that there is only 1 cactus or 1 pterodactyl on the screen at the same time
             if enemy.type == "pterodactyl":
                 enemies.remove(enemy)
                 if pterodactyl_spawn:
@@ -1387,6 +1403,7 @@ while running:
         rand = random.randint(0, 100)
         if rand < chance_of_powerup_spawn:
             spawn_powerup = True
+            # setting the rand variable out of range, so that the powerup will be spawned only once(this is a security measure)
             rand = 1001
 
     # checking for collisions between the player and the enemies
@@ -1449,16 +1466,13 @@ while running:
     
     # this is here because of the asteroid cycle
     if time[0] == starting_time[0] and time[1] == starting_time[1] and asteroid_cycle:
-        print(time)
-        print(time[0])
         asteroid_cycle = False
         switch_cycle = True
     
     # checking if the player has reached a certain score, if so, then the asteroid background objects will start spawning
-    if time[1]%3 == 0 and not asteroid_cycle and time[0] != 0:
+    if time[0]%3 == 0 and not asteroid_cycle and time[0] != 0:
         asteroid_cycle = True
         starting_time = [time[0]+1, time[1]]
-        print("starting time: ", time, "end time: ", starting_time)
 
     # this is the day night cycle switching, it will be used later when I add the opposite color images
     if time[1] == 59 and day_night_cycle and not manual_cycle_switch_on:
@@ -1488,6 +1502,6 @@ while running:
     pygame.display.update()
 
     # Frame rate
-    clock.tick(60)
+    clock.tick(60) # can be lower, but 60 looks good enough
 
 pygame.quit()
