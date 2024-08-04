@@ -2,6 +2,7 @@ import pygame
 import random
 import tkinter
 import threading
+import math
 from pygame import mixer
 
     # functions
@@ -100,12 +101,16 @@ def timer():
                     object.image = object.image_night
                 for object in clouds_group:
                     object.image = object.image_night
+                for object in lucky_comets:
+                    object.image = object.image_night
             else:
                 cycle = "day"
                 cactus.image = cactus.image_day
                 for object in background_objects:
                     object.image = object.image_day
                 for object in clouds_group:
+                    object.image = object.image_day
+                for object in lucky_comets:
                     object.image = object.image_day
             switch_cycle = False
         # spawning background objects
@@ -126,8 +131,10 @@ def timer():
                 fact = ""
                 i = 0
         # checking if the player has reached a certain score, if so, then the asteroid background objects will start spawning
-        if score > 300:
+        if score > 300 and score < 500 or score > 800 and score < 1000 or score > 1500 and score < 2000 or score > 2500:
             asteroid_cycle = True
+        else:
+            asteroid_cycle = False
         # spawning the background asteroids
         if asteroid_cycle:
             if cycle == "day":
@@ -140,6 +147,15 @@ def timer():
             if len(asteroids) < 5:
                 asteroid = Asteroid()
                 asteroids.add(asteroid)
+
+        # scaling up the speed of the game
+        global dificulty, scale_up_speed
+        if dificulty == "easy":
+            scale_up_speed += 0.1
+        elif dificulty == "medium":
+            scale_up_speed += 0.2
+        elif dificulty == "hard":
+            scale_up_speed += 0.3
 
         clock.tick(1)
 
@@ -283,9 +299,7 @@ def game_over_screen():
     with open("scores.txt", "r") as file:
         scores = file.readlines()
     scores = [score.strip() for score in scores]
-    #print(scores)
     scores = [score.split() for score in scores]
-    #print(scores)
     scores = sorted(scores, key=lambda x: int(x[1]), reverse=True)
     file.close()
     # now writing the ordered scores to the file
@@ -931,16 +945,38 @@ class Asteroid(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = -self.size 
         self.rect.y = random.randint(0, HEIGHT//3)
+        self.horizontal_speed = 0
+        self.vertical_speed = 0
+        self.angle = random.randint(80, 90)
+        self.image = pygame.transform.rotate(self.image, self.angle-90)
+        self.speed = random.randint(3,6)
     def move(self):
-        # moving the asteroid by selecting random x and y speeds
+        # moving the asteroid
+        self.horizontal_speed = math.sin(math.radians(self.angle)) * self.speed
+        self.vertical_speed = math.cos(math.radians(self.angle)) * self.speed
+        self.rect.x += self.horizontal_speed
+        self.rect.y += self.vertical_speed
 
-        # later I would like to do the movement through math, but for now this will do
-
-        speedx = random.randint(1, 3)
-        speedy = random.randint(0, 3)
-        #print(speedx, speedy)
-        self.rect.x += speedx
-        self.rect.y += speedy
+class Lucky_comet(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image_day = lucky_comet_day
+        self.image_night = lucky_comet_night
+        self.image_day = pygame.transform.scale(self.image_day, (base_size*4, base_size*2))
+        self.image_night = pygame.transform.scale(self.image_night, (base_size*4, base_size*2))
+        if cycle == "day":
+            self.image = self.image_day
+        else:
+            self.image = self.image_night
+        self.rect = self.image.get_rect()
+        self.rect.x = -self.size
+        self.rect.y = random.randint(0, HEIGHT//3)
+        self.horizontal_speed = 0
+        self.vertical_speed = 0
+        self.speed = random.randint(3,6)
+    def move(self):
+        # moving the lucky comet
+        self.rect.x += self.speed
 
 # Initializing the game
 pygame.init()
@@ -972,6 +1008,7 @@ fps_on = False
 score = 0
 main_menu = True
 asteroid_cycle = False
+scale_up_speed = 0
 
 # setting up images through the dev image change function
 dev_mode_images_change()
@@ -1058,12 +1095,16 @@ background_objects = pygame.sprite.Group()
 spawn_background_object = False
 when_will_spawn_background_object = random.randint(score+2, score+5)
 
-# asteroid images and variables
-placeholder_asteroid = pygame.image.load('sky_images/placeholder asteroid.png')
+# lucky comet variables
+lucky_comet_night = pygame.image.load('sky_images/falling_star.png')
+lucky_comet_day = pygame.image.load('sky_images/falling_star_day.png')
+lucky_comets = pygame.sprite.Group()
 
-asteroid_images = [placeholder_asteroid]
-asteroid_sizes = [base_size, base_size*1.5, base_size*2]
-asteroid_cycle = True
+# asteroid images and variables
+asteroid = pygame.image.load('sky_images/asteroid.png')
+
+asteroid_images = [asteroid]
+asteroid_sizes = [base_size, base_size*1.3, base_size*1.6]
 asteroids = pygame.sprite.Group()
 
 # loading the sun and moon images
@@ -1206,6 +1247,8 @@ while running:
     background_objects.draw(win)
     # drawing the asteroids
     asteroids.draw(win)
+    # drawing the lucky comets
+    lucky_comets.draw(win)
     # drawing the clouds
     clouds_group.draw(win)
     # drawing score in the top left corner
@@ -1366,6 +1409,19 @@ while running:
         if asteroid.rect.x > WIDTH+asteroid.size:
             asteroids.remove(asteroid)
 
+    # moving the lucky comets and removing them if they are off the screen
+    for lucky_comet in lucky_comets:
+        lucky_comet.move()
+        if lucky_comet.rect.x > WIDTH+lucky_comet.size:
+            lucky_comets.remove(lucky_comet)
+    
+    # Here is the lucky comet spawn code
+    if score > 20 and len(lucky_comets) == 0:
+        rand = random.randint(0, 1000000)
+        if rand < 1:
+            lucky_comet = Lucky_comet()
+            lucky_comets.add(lucky_comet)
+
     # checking for collisions between the player and the powerups
     if pygame.sprite.spritecollide(player, powerups, False):
         if sound_effects_on:
@@ -1379,6 +1435,11 @@ while running:
         elif powerup.type == "powerup4":
             fact_func()
         powerups.remove(powerup)
+    
+    # this is here because of the asteroid cycle
+    if score == 500 or score == 1000 or score == 2000:
+        # switching the cycle
+        switch_cycle = True
 
     # this is the day night cycle switching, it will be used later when I add the opposite color images
     if time[1] == 59 and day_night_cycle and not manual_cycle_switch_on:
