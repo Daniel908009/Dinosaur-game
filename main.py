@@ -6,7 +6,7 @@ from pygame import mixer
 
     # functions
 # function to reset the game
-def reset():
+def reset(place_of_call):
     # resizing everything based on the new width
     global resized_dinosaur_day, resized_dinosaur_night, resized_pterodactyl_day, resized_pterodactyl_night, resized_settings_button, resized_settings_button_night, cactuses_images_day, WIDTH, HEIGHT, base_size, cactus_sizes, resized_dinosaur_day2, resized_dinosaur_night2, win, pterodactyl_spawn, cactuses_images_night
     WIDTH = win.get_width()
@@ -57,12 +57,13 @@ def reset():
     clouds_group.empty()
     # reseting the background music and background loudness, and sound loudness
     global background_music, background_music_on, current_background_music_loudness, current_sound_loudness, background_music_playing, selected_music
-    if background_music_on:
-        mixer.music.load(str(selected_music))
-        mixer.music.set_volume(current_background_music_loudness/100)
-        background_music_playing = False
-    else:
-        mixer.music.stop()
+    if place_of_call != "main_menu":
+        if background_music_on:
+            mixer.music.load(str(selected_music))
+            mixer.music.set_volume(current_background_music_loudness/100)
+            background_music_playing = False
+        else:
+           mixer.music.stop()
     # reseting the sound effects
     global touchdown, game_over_sound, sound_effects_on, current_sound_loudness, hit_sound
     touchdown = mixer.Sound("sounds/energy_sound.mp3")
@@ -163,7 +164,7 @@ def main_menu_window(screen):
                     if event.key == pygame.K_s:
                         settings_window()
                     if event.key == pygame.K_r:
-                        reset()
+                        reset("main_menu")
                     if event.key == pygame.K_q:
                         scores_window = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -200,12 +201,12 @@ def main_menu_window(screen):
                 if event.key == pygame.K_s:
                     settings_window()
                 if event.key == pygame.K_r:
-                    reset()
+                    reset("main_menu")
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # checking if the play button was clicked
                 if WIDTH//2-resized_play_button.get_width()//2 <= event.pos[0] <= WIDTH//2+resized_play_button.get_width()//2 and HEIGHT//3 <= event.pos[1] <= HEIGHT//3+resized_play_button.get_height():
                     mixer.music.load(str(selected_music))
-                    reset()
+                    reset("main_menu")
                     main_menu_running = False
                     main_menu = False
                 # checking if the scores button was clicked
@@ -233,7 +234,7 @@ def main_menu_window(screen):
 
 # function that will get a random fact about dinosaurs, this will be displayed on the screen for a few seconds
 def fact_func():
-    global fact
+    global fact, fact_font
     # getting the facts from the file
     with open("random info file.txt", "r") as file:
         facts = file.readlines()
@@ -241,10 +242,13 @@ def fact_func():
     file.close()
     # getting a random fact
     fact = random.choice(facts)
-    # splitting the fact into multiple lines if its too long
-    #if len()
-    # this will may be implemented in the future
-    print(fact)
+    # setting the size of the font so it fits the screen, based on the width of the text
+    text = fact_font.render(fact, True, (0, 0, 0))
+    i = 0
+    while text.get_width() > WIDTH:
+        fact_font = pygame.font.Font("freesansbold.ttf", HEIGHT//40-i)# I think this works, but further testing is needed
+        text = fact_font.render(fact, True, (0, 0, 0))
+        i += 1
 
 # function to display the game over screen
 def game_over_screen():
@@ -287,11 +291,11 @@ def game_over_screen():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     game_over = False
-                    reset()
+                    reset("game_over")
                 if event.key == pygame.K_q:
                     main_menu = True
                     game_over = False
-                    reset()
+                    reset("game_over")
 
         # what gets displayed depends on the cycle
         if cycle == "day":
@@ -563,7 +567,7 @@ def apply_settings(window, setting1, setting2, setting3, setting4, setting5, set
     elif setting14 == "techno":
         selected_music = "sounds/techno.mp3"
     # reseting the game to apply the changes
-    reset()
+    reset("settings")
 
 # function for the settings window
 def settings_window():
@@ -759,31 +763,30 @@ class Dinosaur(pygame.sprite.Sprite):
             self.rect = self.image_night.get_rect()
         self.rect.y = HEIGHT//3 * 2
         self.rect.x = self.rect.y//10
+        self.direction = ""
     def draw(self, win):
         if cycle == "day":
             win.blit(self.image_day, (self.rect.x, self.rect.y))
         else:
             win.blit(self.image_night, (self.rect.x, self.rect.y))
-    def move(self, change):
-
-        # I think that the player movement is to simple, I will have to later adjust it to be more nice
-
+    def move(self):
+        global player_change
         # if the players y is close enough to the ground then he will be placed on the ground
-        if self.rect.y > HEIGHT//3*2-10 and self.rect.y < HEIGHT//3*2:
-            self.rect.y = HEIGHT//3 * 2
-        if self.rect.y > HEIGHT//3*2 and self.rect.y < HEIGHT//3*2+10:
-            self.rect.y = HEIGHT//3 * 2
+        if self.rect.y > HEIGHT//3*2:
+            self.rect.y = HEIGHT//3*2
+            self.direction = ""
         # if the player is in the air then he will fall down and he can't jump while he is in the air
-        if self.rect.y != HEIGHT//3 * 2:
-            if self.rect.y < HEIGHT//3 * 2:
-                self.rect.y +=4
-        else:
-            if not super_jump_on:
-                self.rect.y += change
-            elif change>0:
-                self.rect.y += change
-            else:
-                self.rect.y += change*2
+        if self.direction == "up":
+            self.rect.y += player_change
+        if self.rect.y < HEIGHT//3*2 - resized_dinosaur_day.get_height()*1.8 and not super_jump_on:
+            self.direction = "down"
+            player_change = 5 # speed of the fall
+        # this is the upper limit of the super jump
+        if self.rect.y == HEIGHT//3*2 - resized_dinosaur_day.get_height()*3 and super_jump_on:
+            self.direction = "down"
+            player_change = 5
+        if self.direction == "down":
+            self.rect.y += player_change
     def update(self):
         self.index += 0.1
         if int(self.index) == 2:
@@ -1028,11 +1031,15 @@ powerup_picked_up = pygame.mixer.Sound("sounds/powerup_pickedup.mp3")
 powerup_picked_up.set_volume(current_sound_loudness/100)
 chance_of_powerup_spawn = 5
 spawn_powerup = False
+fact_font = pygame.font.Font("freesansbold.ttf", HEIGHT//40)
 fact = ""
 
-# setting up fonts for the texts
+# setting up font for the text
 font = pygame.font.Font(None, HEIGHT//18)
-fact_font = pygame.font.Font("freesansbold.ttf", HEIGHT//40)
+
+# setting up the fact buble
+fact_buble = pygame.image.load("main_assets/fact_buble.png")
+fact_buble_night = pygame.image.load("main_assets/fact_buble_night.png")
 
 # creating the dinosaur/player
 player = Dinosaur()
@@ -1086,12 +1093,14 @@ while running:
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE or event.key == pygame.K_UP or event.key == pygame.K_w:
-                player_change = -resized_dinosaur_day.get_height()*1.8
+                if player.rect.y == HEIGHT//3*2:
+                    player_change = -10
+                    player.direction = "up"
             if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 if player.rect.y == HEIGHT//3*2:
                     player.ducked = True
             if event.key == pygame.K_r:
-                reset()
+                reset("game loop")
             if event.key == pygame.K_p and manual_pterodactyl_spawn_on:
                 pterodactyl_spawn = True
             if event.key == pygame.K_c and manual_cycle_switch_on:
@@ -1107,7 +1116,8 @@ while running:
                     player.ducked = False
                     player.rect.y = HEIGHT//3*2
             if event.key == pygame.K_UP or event.key == pygame.K_w or event.key == pygame.K_SPACE:
-                player_change = 0
+                #player_change = 0
+                pass
         if event.type == pygame.MOUSEBUTTONDOWN:
             # checking if the settings button is clicked
             if WIDTH-resized_settings_button.get_width() <= event.pos[0] <= WIDTH and 10 <= event.pos[1] <= resized_settings_button_night.get_height()+10:
@@ -1119,7 +1129,7 @@ while running:
                 main_menu = True
     
     # applying changes in position
-    player.move(player_change)
+    player.move()
 
     # background
     if cycle == "day":
@@ -1164,11 +1174,19 @@ while running:
     win.blit(text, (WIDTH//2-text.get_width()//2, 10))
     # drawing the fact in the top middle of the screen
     if fact != "":
+        # drawing the text
         if cycle == "day":
             text = fact_font.render(fact, True, (0, 0, 0))
         else:
             text = fact_font.render(fact, True, (255, 255, 255))
-        win.blit(text, (WIDTH//2-text.get_width()//2, text.get_height()*5))
+        win.blit(text, (WIDTH//2-text.get_width()//2, HEIGHT//3))
+        # drawing a buble around text and resizing it
+        if cycle == "day":
+            fact_buble = pygame.transform.scale(fact_buble, (text.get_width()+30, text.get_height()+30))
+            win.blit(fact_buble, (WIDTH//2-text.get_width()//2-10, HEIGHT//3-10))
+        else:
+            fact_buble_night = pygame.transform.scale(fact_buble_night, (text.get_width()+30, text.get_height()+30))
+            win.blit(fact_buble_night, (WIDTH//2-text.get_width()//2-10, HEIGHT//3-10))
     # drawing the number of lives in the top left corner below the score
     if cycle == "day":
         text = font.render("Lives: "+str(player.lives), True, (0, 0, 0))

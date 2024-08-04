@@ -1,9 +1,17 @@
+Player 297
 Player 226
 Player 215
 Player 195
 Player 192
+Player 120
 Player 118
+Player 80
+Player 71
 Player 61
 Player 48
 Player 45
+Player 45
+Player 42
+Player 33
+Player 31
 Player 29
