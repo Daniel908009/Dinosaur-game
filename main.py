@@ -130,11 +130,7 @@ def timer():
             elif i == 10:
                 fact = ""
                 i = 0
-        # checking if the player has reached a certain score, if so, then the asteroid background objects will start spawning
-        if score > 300 and score < 500 or score > 800 and score < 1000 or score > 1500 and score < 2000 or score > 2500:
-            asteroid_cycle = True
-        else:
-            asteroid_cycle = False
+
         # spawning the background asteroids
         if asteroid_cycle:
             if cycle == "day":
@@ -150,12 +146,16 @@ def timer():
 
         # scaling up the speed of the game
         global dificulty, scale_up_speed
-        if dificulty == "easy":
-            scale_up_speed += 0.1
-        elif dificulty == "medium":
-            scale_up_speed += 0.2
-        elif dificulty == "hard":
-            scale_up_speed += 0.3
+        if dificulty == "Easy":
+            scale_up_speed += 0.01
+        elif dificulty == "Medium":
+            scale_up_speed += 0.02
+        elif dificulty == "Hard":
+            scale_up_speed += 0.03
+
+        # changing the distance between the cactuses
+        global distance
+        distance = scale_up_speed*20
 
         clock.tick(1)
 
@@ -841,13 +841,14 @@ class Cactus(pygame.sprite.Sprite):
             self.image = self.image_day
         else:
             self.image = self.image_night
-        self.rect.x = random.choice([WIDTH, WIDTH+100, WIDTH+200, WIDTH+300, WIDTH+400, WIDTH+500])
+        self.rect.x = random.choice([WIDTH+distance, WIDTH+100+distance, WIDTH+200+distance, WIDTH+300+distance, WIDTH+400+distance, WIDTH+500+distance])
         self.rect.y = HEIGHT//3*2-self.size+resized_dinosaur_day.get_height()
         self.type = "cactus"
+        self.speed = 10
     def move(self):
-        self.rect.x -= 10
+        self.rect.x -= self.speed + round(scale_up_speed)
         global distance_travelled
-        distance_travelled += 10
+        distance_travelled += self.speed + round(scale_up_speed)
 
 class Pterodactyl(pygame.sprite.Sprite):
     def __init__(self):
@@ -859,14 +860,15 @@ class Pterodactyl(pygame.sprite.Sprite):
         else:
             self.image = self.image_night
         self.rect = self.image.get_rect()
-        self.rect.x = random.choice([WIDTH, WIDTH+100, WIDTH+200, WIDTH+300, WIDTH+400, WIDTH+500])
+        self.rect.x = random.choice([WIDTH+distance, WIDTH+100+distance, WIDTH+200+distance, WIDTH+300+distance, WIDTH+400+distance, WIDTH+500+distance])
         self.rect.y = random.choice(pterodactyl_heights)
         self.type = "pterodactyl"
         self.size = self.image.get_height()
+        self.speed = 10
     def move(self):
-        self.rect.x -= 10
+        self.rect.x -= self.speed + scale_up_speed
         global distance_travelled
-        distance_travelled += 10
+        distance_travelled += self.speed + scale_up_speed
 
 class PowerUp(pygame.sprite.Sprite):
     def __init__(self):
@@ -887,8 +889,9 @@ class PowerUp(pygame.sprite.Sprite):
             self.type = "powerup3"
         elif self.index == 3:
             self.type = "powerup4"
+        self.speed = 10
     def move(self):
-        self.rect.x -= 10
+        self.rect.x -= self.speed + round(scale_up_speed)
 
 class BackgroundObject(pygame.sprite.Sprite):
     def __init__(self):
@@ -910,8 +913,9 @@ class BackgroundObject(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = random.choice([WIDTH, WIDTH+100, WIDTH+200, WIDTH+300, WIDTH+400, WIDTH+500])
         self.rect.y = random.randint(HEIGHT//3*2+resized_dinosaur_day.get_height(), HEIGHT-self.image.get_height())
+        self.speed = 10
     def move(self):
-        self.rect.x -= 10
+        self.rect.x -= self.speed + round(scale_up_speed)
     def draw(self, win):
         win.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -931,8 +935,9 @@ class Clouds(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = WIDTH
         self.rect.y = random.randint(0, HEIGHT//3)
+        self.speed = 1
     def move(self):
-        self.rect.x -= 1
+        self.rect.x -= self.speed + round(scale_up_speed)
     def draw(self, win):
         win.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -969,7 +974,7 @@ class Lucky_comet(pygame.sprite.Sprite):
         else:
             self.image = self.image_night
         self.rect = self.image.get_rect()
-        self.rect.x = -self.size
+        self.rect.x = -self.image.get_width()
         self.rect.y = random.randint(0, HEIGHT//3)
         self.horizontal_speed = 0
         self.vertical_speed = 0
@@ -1009,6 +1014,8 @@ score = 0
 main_menu = True
 asteroid_cycle = False
 scale_up_speed = 0
+distance = 0
+starting_time = [0,0]
 
 # setting up images through the dev image change function
 dev_mode_images_change()
@@ -1102,9 +1109,13 @@ lucky_comets = pygame.sprite.Group()
 
 # asteroid images and variables
 asteroid = pygame.image.load('sky_images/asteroid.png')
+asteroid1 = pygame.image.load('sky_images/asteroid2.png')
+asteroid2 = pygame.image.load('sky_images/asteroid3.png')
+asteroid3 = pygame.image.load('sky_images/asteroid4.png')
 
-asteroid_images = [asteroid]
+asteroid_images = [asteroid, asteroid1, asteroid2, asteroid3]
 asteroid_sizes = [base_size, base_size*1.3, base_size*1.6]
+switch_needed = False
 asteroids = pygame.sprite.Group()
 
 # loading the sun and moon images
@@ -1437,9 +1448,17 @@ while running:
         powerups.remove(powerup)
     
     # this is here because of the asteroid cycle
-    if score == 500 or score == 1000 or score == 2000:
-        # switching the cycle
+    if time[0] == starting_time[0] and time[1] == starting_time[1] and asteroid_cycle:
+        print(time)
+        print(time[0])
+        asteroid_cycle = False
         switch_cycle = True
+    
+    # checking if the player has reached a certain score, if so, then the asteroid background objects will start spawning
+    if time[1]%3 == 0 and not asteroid_cycle and time[0] != 0:
+        asteroid_cycle = True
+        starting_time = [time[0]+1, time[1]]
+        print("starting time: ", time, "end time: ", starting_time)
 
     # this is the day night cycle switching, it will be used later when I add the opposite color images
     if time[1] == 59 and day_night_cycle and not manual_cycle_switch_on:
