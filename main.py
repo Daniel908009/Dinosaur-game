@@ -78,7 +78,7 @@ def reset(place_of_call):
 
 # function to update the timer
 def timer():
-    global time, game_over, settings, running, switch_cycle, cycle, cactus, timer_stop, background_objects, spawn_background_object, when_will_spawn_background_object, when_will_cloud, spawn_cloud, clouds_group, score, fact
+    global time, game_over, settings, running, switch_cycle, cycle, cactus, timer_stop, background_objects, spawn_background_object, when_will_spawn_background_object, when_will_cloud, spawn_cloud, clouds_group, score, fact, asteroid_cycle
     i = 0
     while running:
         while game_over and running:
@@ -92,7 +92,7 @@ def timer():
             time[0] += 1
             time[1] = 0
         # the reason why this is here is because if it were in the main loop it would switch the cycle multiple times in a second
-        if switch_cycle:
+        if switch_cycle and not asteroid_cycle:
             if cycle == "day":
                 cycle = "night"
                 cactus.image = cactus.image_night
@@ -112,22 +112,34 @@ def timer():
         if spawn_background_object:
             background_objects.add(BackgroundObject())
             spawn_background_object = False
-            when_will_spawn_background_object = random.randint(score+5, score+20)
+            when_will_spawn_background_object = random.randint(score+2, score+5)
         # spawning clouds
         if spawn_cloud:
             clouds_group.add(Clouds())
             spawn_cloud = False
             when_will_cloud = random.randint(score+5, score+20)
         # checking if there is a fact to display, the actual drawing is done in the main loop
-        #print(fact)
         if fact != "":
-            #print(i)
             if i < 10:
                 i += 1
             elif i == 10:
                 fact = ""
                 i = 0
-                #print("fact reseted")
+        # checking if the player has reached a certain score, if so, then the asteroid background objects will start spawning
+        if score > 300:
+            asteroid_cycle = True
+        # spawning the background asteroids
+        if asteroid_cycle:
+            if cycle == "day":
+                cycle = "night"
+                cactus.image = cactus.image_night
+                for object in background_objects:
+                    object.image = object.image_night
+                for object in clouds_group:
+                    object.image = object.image_night
+            if len(asteroids) < 5:
+                asteroid = Asteroid()
+                asteroids.add(asteroid)
 
         clock.tick(1)
 
@@ -305,9 +317,6 @@ def game_over_screen():
             # drawing the score
             text = font.render("Score: "+str(score), True, (0, 0, 0))
             win.blit(text, (10, 10))
-            # drawing the game over text
-            text = font.render("Game Over", True, (0, 0, 0))
-            win.blit(text, (win.get_width()//2-text.get_width()//2, win.get_height()//2-text.get_height()//2))
             # drawing the timer
             text = font.render(str(time[0])+"m "+str(time[1]) + "s", True, (0, 0, 0))
             win.blit(text, (WIDTH//2-text.get_width()//2, 10))
@@ -320,9 +329,6 @@ def game_over_screen():
             # drawing the score
             text = font.render("Score: "+str(score), True, (255, 255, 255))
             win.blit(text, (10, 10))
-            # drawing the game over text
-            text = font.render("Game Over", True, (255, 255, 255))
-            win.blit(text, (win.get_width()//2-text.get_width()//2, win.get_height()//2-text.get_height()//2))
             # drawing the timer
             text = font.render(str(time[0])+"m "+str(time[1]) + "s", True, (255, 255, 255))
             win.blit(text, (WIDTH//2-text.get_width()//2, 10))
@@ -337,6 +343,14 @@ def game_over_screen():
 
         # drawing the clouds
         clouds_group.draw(win)
+
+        # drawing the game over text
+        if cycle == "day":
+            text = font.render("Game Over", True, (0, 0, 0))
+            win.blit(text, (win.get_width()//2-text.get_width()//2, win.get_height()//2-text.get_height()//2))
+        else:
+            text = font.render("Game Over", True, (255, 255, 255))
+            win.blit(text, (win.get_width()//2-text.get_width()//2, win.get_height()//2-text.get_height()//2))
 
         # Updating the display
         pygame.display.update()
@@ -869,8 +883,12 @@ class BackgroundObject(pygame.sprite.Sprite):
         self.size = random.choice(backgroundimage_sizes)
         self.image_day = day_background_images[self.index]
         self.image_night = night_background_images[self.index]
-        self.image_day = pygame.transform.scale(self.image_day, (self.size, self.size))
-        self.image_night = pygame.transform.scale(self.image_night, (self.size, self.size))
+        if self.image_day == stegosaurus or self.image_day == triceratops:
+            self.image_day = pygame.transform.scale(self.image_day, (self.size*2, self.size))
+            self.image_night = pygame.transform.scale(self.image_night, (self.size*2, self.size))
+        else:
+            self.image_day = pygame.transform.scale(self.image_day, (self.size, self.size))
+            self.image_night = pygame.transform.scale(self.image_night, (self.size, self.size))
         if cycle == "day":
             self.image = self.image_day
         else:
@@ -904,6 +922,26 @@ class Clouds(pygame.sprite.Sprite):
     def draw(self, win):
         win.blit(self.image, (self.rect.x, self.rect.y))
 
+class Asteroid(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = random.choice(asteroid_images)
+        self.size = random.choice(asteroid_sizes)
+        self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.rect = self.image.get_rect()
+        self.rect.x = -self.size 
+        self.rect.y = random.randint(0, HEIGHT//3)
+    def move(self):
+        # moving the asteroid by selecting random x and y speeds
+
+        # later I would like to do the movement through math, but for now this will do
+
+        speedx = random.randint(1, 3)
+        speedy = random.randint(0, 3)
+        #print(speedx, speedy)
+        self.rect.x += speedx
+        self.rect.y += speedy
+
 # Initializing the game
 pygame.init()
 
@@ -933,6 +971,7 @@ manual_powerup_spawn_on = False
 fps_on = False
 score = 0
 main_menu = True
+asteroid_cycle = False
 
 # setting up images through the dev image change function
 dev_mode_images_change()
@@ -979,10 +1018,24 @@ backgroundcrater4 = pygame.image.load('background_images/crater4.png')
 backgroundcrater4_night = pygame.image.load('background_images/crater4_night.png')
 tumble = pygame.image.load('background_images/tumble1.png')
 tumble_night = pygame.image.load('background_images/tumble1_night.png')
+dinosaur_skull = pygame.image.load('background_images/dinosaur_skull.png')
+dinosaur_skull_night = pygame.image.load('background_images/dinosaur_skull_night.png')
+footprint = pygame.image.load('background_images/footprint.png')
+footprint_night = pygame.image.load('background_images/footprint_night.png')
+footprint_rock = pygame.image.load('background_images/footprint_rock.png')
+footprint_rock_night = pygame.image.load('background_images/footprint_rock_night.png')
+raptor = pygame.image.load('background_images/raptor.png')
+raptor_night = pygame.image.load('background_images/raptor_night.png')
+runner = pygame.image.load('background_images/runner.png')
+runner_night = pygame.image.load('background_images/runner_night.png')
+stegosaurus = pygame.image.load('background_images/stegosaurus.png')
+stegosaurus_night = pygame.image.load('background_images/stegosaurus_night.png')
+triceratops = pygame.image.load('background_images/triceratops.png')
+triceratops_night = pygame.image.load('background_images/triceratops_night.png')
 
 
-night_background_images = [backgrounddino1_night, backgroundegg_night, backgroundcrater1_night, backgroundcrater2_night, tumble_night, backgroundcrater3_night, backgroundcrater4_night]
-day_background_images = [backgrounddino1, backgroundegg, backgroundcrater1, backgroundcrater2, tumble, backgroundcrater3, backgroundcrater4]
+night_background_images = [backgrounddino1_night, backgroundegg_night, backgroundcrater1_night, backgroundcrater2_night, tumble_night, backgroundcrater3_night, backgroundcrater4_night, dinosaur_skull_night, footprint_night, footprint_rock_night, raptor_night, runner_night, stegosaurus_night, triceratops_night]
+day_background_images = [backgrounddino1, backgroundegg, backgroundcrater1, backgroundcrater2, tumble, backgroundcrater3, backgroundcrater4, dinosaur_skull, footprint, footprint_rock, raptor, runner, stegosaurus, triceratops]
 # clouds images
 cloud1_day = pygame.image.load('sky_images/cloud1_day.png')
 cloud2_day = pygame.image.load('sky_images/cloud2_day.png')
@@ -1003,7 +1056,15 @@ spawn_cloud = False
 backgroundimage_sizes = [base_size*1.6, base_size*1.5, base_size]
 background_objects = pygame.sprite.Group()
 spawn_background_object = False
-when_will_spawn_background_object = random.randint(score+5, score+20)
+when_will_spawn_background_object = random.randint(score+2, score+5)
+
+# asteroid images and variables
+placeholder_asteroid = pygame.image.load('sky_images/placeholder asteroid.png')
+
+asteroid_images = [placeholder_asteroid]
+asteroid_sizes = [base_size, base_size*1.5, base_size*2]
+asteroid_cycle = True
+asteroids = pygame.sprite.Group()
 
 # loading the sun and moon images
 sun = pygame.image.load('sky_images/sun.png')
@@ -1143,6 +1204,8 @@ while running:
         pygame.draw.line(win, (255, 255, 255), (0, HEIGHT//3*2+resized_dinosaur_day.get_height()), (WIDTH, HEIGHT//3*2+resized_dinosaur_day.get_height()), 5)
     # drawing the background objects
     background_objects.draw(win)
+    # drawing the asteroids
+    asteroids.draw(win)
     # drawing the clouds
     clouds_group.draw(win)
     # drawing score in the top left corner
@@ -1296,6 +1359,12 @@ while running:
         cloud.move()
         if cloud.rect.x < 0-cloud.rect.width:
             clouds_group.remove(cloud)
+    
+    # moving the asteroids and removing them if they are off the screen
+    for asteroid in asteroids:
+        asteroid.move()
+        if asteroid.rect.x > WIDTH+asteroid.size:
+            asteroids.remove(asteroid)
 
     # checking for collisions between the player and the powerups
     if pygame.sprite.spritecollide(player, powerups, False):
