@@ -38,7 +38,7 @@ Enjoy the game! <br>
 <h2>Using command prompt</h2>
 <h3>Downloading source code <h3>
 Open your command prompt and enter the folowing code without the " letters <br>
-"git clone https://github.com/Daniel908009/Chess.git" <br>
+"git clone https://github.com/Daniel908009/Dinosaur-game.git" <br>
 This code adress of the site can also be found if you click the code button inside the github repository UI <br>
 If you dont have git than first enter the folowing command: sudo apt install git <br>
 Now open a console and enter the folowing code: pip install -r /path/to/requirements.txt <br>
