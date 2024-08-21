@@ -22,14 +22,14 @@ C = switch day/night<br>
 <h2>Using graphic UI</h2>
 <h3>Downloading EXE <h3>
 First make sure you have the latest release version selected <br>
- <br>
+(https://github.com/user-attachments/assets/7a3fbbd6-9fa7-4034-80e2-32c5c181ac79) <br>
 Then click on download exe file and wait until it downloads <br>
- <br>
+(https://github.com/user-attachments/assets/dc9c87e7-6e18-4a91-a9d5-a8f908b2d6c7) <br>
 After its downloaded you can find it through file explorer or the browser it self. <br>
 Enjoy!<br>
 <h3>Downloading source code <h3>
 First click on the code button as shown in the picture bellow, then click the option Download ZIP <br>
- <br>
+(https://github.com/user-attachments/assets/801a8deb-b6e5-475e-9b6b-262b56fd6a23) <br>
 After its downloaded you can find it on your computer through file explorer. After you have found it right click it, it should display option called "Extract" <br>
 Click on it and wait a moment. A new directory should appear containing all the files neccesary for the game.<br>
 Now open a console and enter the folowing code: pip install -r /path/to/requirements.txt <br>
@@ -45,4 +45,5 @@ Now open a console and enter the folowing code: pip install -r /path/to/requirem
 *Replace the /path/to/requirements.txt with the actual path. <br>
 Enjoy the game! <br>
 <h1>Screenshots of the game</h1>
- <br>
+(https://github.com/user-attachments/assets/e79bd8b4-d8c5-41c2-892e-9f6e56453c1e) <br>
+(https://github.com/user-attachments/assets/4ddfb49d-89f5-43f0-980a-a846abe487bd)
